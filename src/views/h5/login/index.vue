@@ -37,7 +37,9 @@
         <!--          </n-card>-->
         <!--        </div>-->
         <div class="input">
+          <!-- 登录表单 -->
           <n-form
+            v-if="isLogin"
             ref="loginFormRef"
             label-placement="left"
             size="large"
@@ -70,26 +72,8 @@
                 </template>
               </n-input>
             </n-form-item>
-            <n-form-item
-              v-if="!isLogin"
-              path="inviteCode"
-            >
-              <n-input
-                v-model:value="loginForm.inviteCode"
-                placeholder="invite code"
-                size="large"
-                @keyup.enter="handleLoginSubmit"
-              >
-                <template #prefix>
-                  <n-icon :component="MailOpenOutline" />
-                </template>
-              </n-input>
-            </n-form-item>
             <!-- 登录时显示人机校验 -->
-            <n-form-item
-              v-if="isLogin"
-              path="captcha"
-            >
+            <n-form-item path="captcha">
               <div style="display: flex; gap: 10px; align-items: center">
                 <n-input
                   v-model:value="captchaInput"
@@ -123,6 +107,70 @@
                   "
                 />
               </div>
+            </n-form-item>
+          </n-form>
+
+          <!-- 注册表单 -->
+          <n-form
+            v-else
+            ref="registerFormRef"
+            label-placement="left"
+            size="large"
+            :model="loginForm"
+            :rules="registerRules"
+          >
+            <n-form-item path="username">
+              <n-input
+                v-model:value="loginForm.username"
+                placeholder="username"
+                size="large"
+                @keyup.enter="handleLoginSubmit"
+              >
+                <template #prefix>
+                  <n-icon :component="PersonCircleOutline" />
+                </template>
+              </n-input>
+            </n-form-item>
+            <n-form-item path="password">
+              <n-input
+                v-model:value="loginForm.password"
+                placeholder="password"
+                type="password"
+                show-password-on="click"
+                size="large"
+                @keyup.enter="handleLoginSubmit"
+              >
+                <template #prefix>
+                  <n-icon :component="LockOpen" />
+                </template>
+              </n-input>
+            </n-form-item>
+            <n-form-item path="confirmPassword">
+              <n-input
+                v-model:value="loginForm.confirmPassword"
+                placeholder="confirm password"
+                type="password"
+                show-password-on="click"
+                size="large"
+                @keyup.enter="handleLoginSubmit"
+                @blur="validateConfirmPassword"
+              >
+                <template #prefix>
+                  <n-icon :component="LockOpen" />
+                </template>
+              </n-input>
+            </n-form-item>
+            <n-form-item path="inviteCode">
+              <n-input
+                v-model:value="loginForm.inviteCode"
+                placeholder="invite code"
+                size="large"
+                @keyup.enter="handleLoginSubmit"
+              >
+                <template #prefix>
+                  <n-icon :component="MailOpenOutline" />
+                </template>
+              </n-input>
             </n-form-item>
           </n-form>
 
@@ -207,6 +255,7 @@ import {
 import { darkTheme } from 'naive-ui';
 
 const loginFormRef = ref(null);
+const registerFormRef = ref(null);
 
 import { useRoute } from 'vue-router';
 
@@ -244,6 +293,7 @@ const isSubmitting = ref(false);
 const loginForm = ref({
   username: '',
   password: '',
+  confirmPassword: '',
   inviteCode: '',
   rememberLogin: false,
 });
@@ -292,12 +342,12 @@ const getCaptcha = async () => {
     isCaptchaLoading.value = false;
   }
 };
+// 登录模式的校验规则
 const loginRules = {
   username: { required: true, message: '请输入用户名', trigger: 'blur' },
   password: { required: true, message: '请输入密码', trigger: 'blur' },
   invite_code: {
-    validator: (rules, value) => {
-      console.log(rules);
+    validator: (_, value) => {
       if (!value) {
         return true;
       } else if (value.length != 14) {
@@ -307,6 +357,41 @@ const loginRules = {
     },
   },
 };
+
+// 注册模式的校验规则
+const registerRules = {
+  username: { required: true, message: '请输入用户名', trigger: 'blur' },
+  password: {
+    required: true,
+    message: '密码至少包含字母和数字，长度不少于6位',
+    trigger: 'blur',
+    pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/,
+  },
+  confirmPassword: {
+    required: true,
+    message: '两次输入的密码不一致',
+    trigger: 'blur',
+    validator: (_, value) => {
+      if (value === '') {
+        return new Error('请确认密码');
+      } else if (value !== loginForm.value.password) {
+        return new Error('两次输入的密码不一致');
+      }
+      return true;
+    },
+  },
+  invite_code: {
+    validator: (_, value) => {
+      if (!value) {
+        return true;
+      } else if (value.length != 14) {
+        throw Error('邀请码格式不正确');
+      }
+      return true;
+    },
+  },
+};
+
 onMounted(() => {
   const rememberLogin = getRememberLogin();
   if (rememberLogin) {
@@ -328,6 +413,8 @@ onMounted(() => {
 watch(
   () => isLogin.value,
   (newVal) => {
+    // 清空确认密码
+    loginForm.value.confirmPassword = '';
     if (newVal) {
       getCaptcha(); // 切换到登录模式时获取验证码
     }
@@ -340,8 +427,11 @@ const handleLoginSubmit = (e) => {
     return;
   }
 
+  // 根据当前模式选择对应的表单引用
+  const formRef = isLogin.value ? loginFormRef.value : registerFormRef.value;
+
   // @ts-ignore
-  loginFormRef.value.validate((errors) => {
+  formRef.validate((errors) => {
     if (!errors) {
       if (isLogin.value) {
         handleUsernameLogin();
@@ -354,12 +444,27 @@ const handleLoginSubmit = (e) => {
 
 function handleRegister() {
   isLogin.value = !isLogin.value;
+  // 清空确认密码
+  loginForm.value.confirmPassword = '';
 }
+
+// 验证确认密码
+const validateConfirmPassword = () => {
+  if (
+    loginForm.value.confirmPassword &&
+    loginForm.value.confirmPassword !== loginForm.value.password
+  ) {
+    // @ts-ignore
+    loginFormRef.value.validateField('confirmPassword');
+  }
+};
 
 function handleUserRegister(e) {
   e.preventDefault();
+
+  const formRef = isLogin.value ? loginFormRef.value : registerFormRef.value;
   // @ts-ignore
-  loginFormRef.value.validate(async (errors) => {
+  formRef.validate(async (errors) => {
     if (!errors) {
       // 设置提交状态为true，防止重复点击
       isSubmitting.value = true;
