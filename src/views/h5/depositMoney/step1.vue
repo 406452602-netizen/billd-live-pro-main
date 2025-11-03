@@ -119,7 +119,7 @@
         </n-radio>
         <n-radio
           :value="-1"
-          @click="showCustomAmount = true"
+          @click="handleCustomAmount"
           >{{ sysTranslationsDict['sys.custom'] }}
         </n-radio>
       </n-radio-group>
@@ -132,8 +132,10 @@
       <n-input-number
         id="amount"
         v-model="formData.amount"
-        :min="0"
-        :placeholder="`${sysTranslationsDict['sys.placeholder.input']}}`"
+        :min="0.01"
+        :step="0.01"
+        :placeholder="`${sysTranslationsDict['sys.placeholder.input']}`"
+        :on-update:value="validateCustomAmount"
       />
     </div>
     <n-button
@@ -177,24 +179,30 @@ const sysTranslationsDict = computed(() => {
 
 // 计算属性，用于检查表单是否有效
 const isFormValid = computed(() => {
-  if (!formData.value.bank_type || !formData.value.amount) {
+  // 检查银行类型是否选择
+  if (!formData.value.bank_type) {
     return true;
   }
 
+  // 检查金额是否有效 - 自定义金额时需要确保amount有值且大于0
+  if (showCustomAmount.value) {
+    // 自定义金额模式：必须有输入且大于0
+    if (!formData.value.amount || formData.value.amount <= 0) {
+      return true;
+    }
+  } else {
+    // 非自定义金额模式：必须选择预设金额
+    if (!formData.value.amount) {
+      return true;
+    }
+  }
+
+  // 银行支付模式需要检查用户名
   if (formData.value.bank_type === bankTypeEnum.BANK) {
-    console.log(
-      '进入了 BANK',
-      formData.value.username,
-      !formData.value.username
-    );
     return !formData.value.username;
-  } else if (formData.value.bank_type === bankTypeEnum.VIRTUAL) {
-    console.log(
-      '进入了 VIRTUAL',
-      formData.value.bank_id,
-      formData.value.protocol_type,
-      !!formData.value.bank_id
-    );
+  }
+  // 虚拟货币模式需要检查银行ID和协议类型
+  else if (formData.value.bank_type === bankTypeEnum.VIRTUAL) {
     return !formData.value.bank_id || !formData.value.protocol_type;
   }
 
@@ -219,6 +227,7 @@ async function fetchBanks() {
 }
 
 function selectVirtualCard(virtualCard: any) {
+  console.log('selectVirtualCard', virtualCard);
   protocolTypeList.value = virtualCard.protocol_type_list;
 }
 
@@ -227,21 +236,38 @@ function selectAmount(amountValue: number) {
   showCustomAmount.value = false;
 }
 
+// 处理自定义金额选择
+function handleCustomAmount() {
+  showCustomAmount.value = true;
+  // 选择自定义时重置金额，这样用户必须输入金额后按钮才会变为可点击
+  formData.value.amount = null;
+}
+
+// 验证自定义金额输入
+function validateCustomAmount(value) {
+  // 这里可以添加额外的验证逻辑，如果需要
+  // 金额输入会自动通过n-input-number的min属性限制最小值
+  formData.value.amount = value;
+}
+
 function submit() {
-  if (formData.value.bank_type === bankTypeEnum.BANK) {
-    formData.value.status = -1;
-  } else if (formData.value.bank_type === bankTypeEnum.VIRTUAL) {
-    formData.value.status = 1;
-  }
-  createRechargeRecord(formData.value).then((res) => {
-    if (res.code === 200) {
-      message.success('提交成功');
-      router.push({
-        name: mobileRouterName.h5TransactionRecordDetail,
-        query: { id: res.data.id },
-      });
+  // 表单验证通过后提交
+  if (!isFormValid.value) {
+    if (formData.value.bank_type === bankTypeEnum.BANK) {
+      formData.value.status = -1;
+    } else if (formData.value.bank_type === bankTypeEnum.VIRTUAL) {
+      formData.value.status = 1;
     }
-  });
+    createRechargeRecord(formData.value).then((res) => {
+      if (res.code === 200) {
+        message.success('提交成功');
+        router.push({
+          name: mobileRouterName.h5TransactionRecordDetail,
+          query: { id: res.data.id },
+        });
+      }
+    });
+  }
 }
 
 function changeBankType(value) {

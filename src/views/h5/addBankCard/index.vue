@@ -83,7 +83,7 @@
               v-model:value="formData.protocol_type"
               :label="item"
             >
-              {{ sysTranslationsDict[item] }}
+              {{ sysTranslationsDict[item] || item }}
             </n-radio-button>
           </n-radio-group>
         </n-form-item>
@@ -157,6 +157,7 @@ const validateHolderName = (rule: FormItemRule, value: string) => {
 };
 
 const handleBankChange = (value, info) => {
+  console.log(value, info);
   cardTypeOption.value = info.protocol_type_list;
   return value;
 };

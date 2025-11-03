@@ -3,8 +3,8 @@
     <n-float-button
       :left="0"
       :top="0"
-      @click="router.push({ name: mobileRouterName.h5 })"
       shape="square"
+      @click="router.push({ name: mobileRouterName.h5 })"
     >
       <n-icon>
         <Home />
@@ -119,6 +119,23 @@
             :model="loginForm"
             :rules="registerRules"
           >
+            <div
+              style="
+                margin-bottom: 15px;
+                padding: 10px;
+                background-color: rgba(0, 42, 102, 0.7);
+                border: 1px solid rgba(0, 168, 255, 0.5);
+                border-radius: 5px;
+                font-size: 12px;
+                color: #ffffff;
+                box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
+              "
+            >
+              <div>
+                用户名规则：只能使用字母、数字和下划线，不能以数字开头，不能使用特殊符号和中文
+              </div>
+              <div>密码规则：必须包含字母和数字</div>
+            </div>
             <n-form-item path="username">
               <n-input
                 v-model:value="loginForm.username"
@@ -153,7 +170,6 @@
                 show-password-on="click"
                 size="large"
                 @keyup.enter="handleLoginSubmit"
-                @blur="validateConfirmPassword"
               >
                 <template #prefix>
                   <n-icon :component="LockOpen" />
@@ -360,7 +376,19 @@ const loginRules = {
 
 // 注册模式的校验规则
 const registerRules = {
-  username: { required: true, message: '请输入用户名', trigger: 'blur' },
+  username: {
+    required: true,
+    trigger: 'blur',
+    validator: (_, value) => {
+      if (!value) {
+        return new Error('请输入用户名');
+      }
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(value)) {
+        return new Error('用户名只能包含字母、数字、下划线，且不能以数字开头');
+      }
+      return true;
+    },
+  },
   password: {
     required: true,
     message: '密码至少包含字母和数字，长度不少于6位',
@@ -369,12 +397,13 @@ const registerRules = {
   },
   confirmPassword: {
     required: true,
-    message: '两次输入的密码不一致',
     trigger: 'blur',
     validator: (_, value) => {
+      console.log('confirmPassword', _);
       if (value === '') {
         return new Error('请确认密码');
-      } else if (value !== loginForm.value.password) {
+      }
+      if (value != loginForm.value.password) {
         return new Error('两次输入的密码不一致');
       }
       return true;
@@ -447,17 +476,6 @@ function handleRegister() {
   // 清空确认密码
   loginForm.value.confirmPassword = '';
 }
-
-// 验证确认密码
-const validateConfirmPassword = () => {
-  if (
-    loginForm.value.confirmPassword &&
-    loginForm.value.confirmPassword !== loginForm.value.password
-  ) {
-    // @ts-ignore
-    loginFormRef.value.validateField('confirmPassword');
-  }
-};
 
 function handleUserRegister(e) {
   e.preventDefault();

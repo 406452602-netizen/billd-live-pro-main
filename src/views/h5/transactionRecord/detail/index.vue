@@ -38,9 +38,9 @@
       />
       <step2
         v-else-if="current === 1"
+        :model-value="rechargeRecord"
         @next="stepNext"
         @cancel="cancelStep"
-        :model-value="rechargeRecord"
       />
       <step3 v-else-if="current == 2" />
       <step4
@@ -100,7 +100,7 @@
 <script setup lang="ts">
 import { ArrowBack } from '@vicons/ionicons5';
 // import { useMessage } from 'naive-ui';
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // const message = useMessage();
@@ -206,7 +206,7 @@ function cancelStep() {
 }
 
 function stepNext(data) {
-  current.value = 1;
+  current.value += 1;
   rechargeRecord.value = data;
 }
 
