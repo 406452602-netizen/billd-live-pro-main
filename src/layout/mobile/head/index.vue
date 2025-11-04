@@ -21,7 +21,7 @@
         <!--          />-->
         <!--        </a>-->
         <span class="github">
-          <n-button text> sk6688.vip </n-button>
+          <n-button text> GALAXY99 </n-button>
         </span>
         <n-dropdown
           trigger="click"

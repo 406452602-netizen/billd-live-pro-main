@@ -13,8 +13,8 @@
           {{ currentLocale === 'zh' ? '正在进入游戏...' : 'Entering game...' }}
         </p>
         <p
-          class="game-loading-name"
           v-if="currentGame"
+          class="game-loading-name"
         >
           {{ getLocalizedGameName(currentGame) }}
         </p>
