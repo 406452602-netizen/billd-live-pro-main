@@ -137,9 +137,9 @@
     <n-button
       type="primary"
       class="submit-button"
+      block
       @click="submit"
       :disabled="isFormValid"
-      block
       >立即存款
     </n-button>
   </n-card>

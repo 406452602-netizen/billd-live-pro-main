@@ -47,35 +47,53 @@ export const useCacheStore = defineStore(`${lsKeyPrefix}pinia-cache`, {
       this.locale = locale;
       this.initTranslationsDict();
     },
-    async initTranslationsDict() {
+    initTranslationsDict() {
       try {
-        // 优先从 cookie 获取国际化数据
+        // 优先从 cookie 获取国际化数据以快速显示
         const cookieDict = getSysTranslationsDict();
         if (cookieDict) {
-          console.log('从 cookie 获取国际化数据');
+          console.log('从 cookie 获取国际化数据（快速显示）');
           this.sysTranslationsDict = cookieDict;
-          return;
         }
 
-        // 如果 cookie 中没有数据或数据已过期，则从后台获取
-        console.log('从后台获取国际化数据');
-        await findDict(this.locale).then((res) => {
-          const rows = res.data.rows;
-          const newDict: Record<string, string> = {};
-          
-          for (let i = 0; i < rows.length; i += 1) {
-            const key = rows[i].lg_key;
-            const value = rows[i].dict_value;
-            newDict[key] = value;
-            this.sysTranslationsDict[key] = value;
-          }
+        // 无论是否有cookie数据，都在后台异步获取最新数据（懒加载）
+        // 这样可以确保即使页面有更新，字典也能同步更新
+        console.log('后台异步获取最新国际化数据');
 
-          // 将获取到的数据存储到 cookie 中
-          setSysTranslationsDict(newDict);
-          console.log('国际化数据已缓存到 cookie');
-        });
+        // 使用setTimeout确保在页面渲染完成后再执行
+        setTimeout(async () => {
+          try {
+            const res = await findDict(this.locale);
+            const rows = res.data.rows;
+            const newDict: Record<string, string> = {};
+
+            // 构建新的字典
+            for (let i = 0; i < rows.length; i += 1) {
+              const key = rows[i].lg_key;
+              const value = rows[i].dict_value;
+              newDict[key] = value;
+            }
+
+            // 更新store中的数据
+            this.sysTranslationsDict = { ...newDict };
+
+            // 更新cookie缓存
+            setSysTranslationsDict(newDict);
+            console.log('国际化数据已在后台更新并缓存到 cookie');
+          } catch (asyncError) {
+            console.error('后台异步更新国际化字典失败:', asyncError);
+            // 这里不显示错误，因为用户已经看到内容了
+          }
+        }, 0);
       } catch (error) {
         console.error('初始化国际化字典失败:', error);
+        // 如果cookie获取也失败，设置默认值避免白屏
+        if (
+          !this.sysTranslationsDict ||
+          Object.keys(this.sysTranslationsDict).length === 0
+        ) {
+          this.sysTranslationsDict = {};
+        }
       }
     },
     async initLocaleList() {

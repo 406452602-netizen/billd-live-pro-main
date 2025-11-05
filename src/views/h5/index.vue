@@ -20,6 +20,29 @@
         </p>
       </div>
     </div>
+
+    <!-- 临时游戏链接按钮（当window.open被拦截时显示） -->
+    <n-modal
+      v-model:show="showGameButton"
+      preset="dialog"
+      :title="sysTranslationsDict['sys.open']"
+      :close-on-esc="false"
+      :close-on-click-modal="false"
+    >
+      <div style="text-align: center; padding: 20px">
+        <p>
+          {{ sysTranslationsDict['sys.open.window.error'] }}
+        </p>
+        <n-button
+          type="primary"
+          size="large"
+          style="margin-top: 20px"
+          @click="handleManualOpenGame"
+        >
+          {{ sysTranslationsDict['sys.open'] }}
+        </n-button>
+      </div>
+    </n-modal>
     <!--    <div-->
     <!--      class="swiper"-->
     <!--      :style="{-->
@@ -177,7 +200,7 @@
     <!-- 游戏列表展示区域 -->
     <div
       class="game-list-section"
-      style="margin: 20px 0"
+      style="margin: 20px 0 30px"
     >
       <div
         class="section-title"
@@ -412,6 +435,10 @@ const currentLocale = computed(() => {
   return cacheStore.locale || 'en';
 });
 
+// 游戏链接相关状态
+const showGameButton = ref(false);
+const gameUrl = ref('');
+
 // 心跳检测相关
 const keepAliveTimer = ref<NodeJS.Timeout | null>(null);
 const keepAliveDelay = 30000; // 10秒心跳间隔
@@ -448,6 +475,21 @@ const getLocalizedGameName = (game: any) => {
 //   },
 // ]);
 const swiperTimer = ref();
+
+// 处理手动打开游戏
+const handleManualOpenGame = () => {
+  if (gameUrl.value) {
+    try {
+      const newWindow = window.open(gameUrl.value, '_blank');
+      if (newWindow) {
+        newWindow.focus();
+        showGameButton.value = false;
+      }
+    } catch (error) {
+      console.error('手动打开游戏时出错:', error);
+    }
+  }
+};
 
 // 开始用户活跃检测
 const startKeepAlive = () => {
@@ -491,7 +533,39 @@ function jumpGame(gameId: string | number) {
 
       if (res.code === 200 && res.data) {
         userStore.getUserInfo();
-        window.open(res.data, '_blank', 'noopener,noreferrer');
+
+        // 存储游戏URL以便在需要时使用
+        gameUrl.value = res.data;
+
+        // 解决iOS中window.open被拦截的问题
+        // 方法1：直接打开窗口（优先）
+        try {
+          // 在用户交互上下文中直接打开窗口
+          const newWindow = window.open('', '_blank');
+          if (newWindow) {
+            // 立即设置location，避免被拦截
+            newWindow.location.href = res.data;
+            // 启动一个定时器检查窗口是否被关闭
+            if (newWindow && !newWindow.closed) {
+              newWindow.focus();
+            } else {
+              // 如果窗口被关闭，可能是被拦截了，显示手动打开按钮
+              showGameButton.value = true;
+              console.log('窗口可能被拦截，显示手动打开按钮');
+            }
+          } else {
+            // 方法2：如果窗口创建失败，提示用户手动操作
+            console.error('无法打开新窗口，可能被浏览器拦截');
+            showGameButton.value = true;
+            window.$message.warning(
+              '浏览器阻止了新窗口打开，请使用下方按钮手动打开游戏'
+            );
+          }
+        } catch (error) {
+          console.error('打开新窗口失败:', error);
+          showGameButton.value = true;
+          window.$message.warning('打开游戏时出错，请使用下方按钮手动打开游戏');
+        }
 
         // 启动活跃检测
         startKeepAlive();

@@ -5,19 +5,28 @@
       align="center"
       vertical
     >
-      <div>{{ data.amount }}元</div>
-      <div>请在 {{ formatTime(remainingTime) }} 内完成支付</div>
+      <div>{{ data.amount }}</div>
+      <!--      请在 {{ formatTime(remainingTime) }} 内完成支付-->
+      <div>
+        {{
+          translateWithVars('deposit.money.payTip', {
+            time: formatTime(remainingTime),
+          })
+        }}
+      </div>
     </n-flex>
     <div class="info">
       <span>{{ targetBank.holder_name }}</span>
       <span style="font-size: 10px; color: #8e8b8b"
-        >（{{ targetBank.bank.bank_name }}）</span
+      >（{{ targetBank.bank.bank_name }}）</span
       >
       <n-button
         size="small"
         style="float: right"
         @click="copyText(targetBank.holder_name)"
-        >复制
+      >
+        <!--        复制-->
+        {{ sysTranslationsDict['sys.copy'] }}
       </n-button>
     </div>
     <div class="info">
@@ -26,41 +35,55 @@
         size="small"
         style="float: right"
         @click="copyText(targetBank.card_number)"
-        >复制
+      >{{ sysTranslationsDict['sys.copy'] }}
       </n-button>
     </div>
     <div class="info">
-      <span>金额：</span>
+      <span>
+        <!--        金额-->
+      <span>{{ sysTranslationsDict['sys.deposit.money'] }}：</span>
+      >
       <span>{{ data.amount }}</span>
       <n-button
         size="small"
         style="float: right"
         @click="copyText(data.amount.toString())"
-        >复制
+      >{{ sysTranslationsDict['sys.copy'] }}
       </n-button>
     </div>
   </n-card>
   <n-card class="important-tip">
-    <p>重要提示：</p>
+    <!--    <p>重要提示：</p>-->
+    <!--    <ul>-->
+    <!--      <li>请确保汇款金额与显示金额一致。</li>-->
+    <!--      <li>汇款时备注正确的交易信息。</li>-->
+    <!--      <li>若半小时内未完成支付，本次存款将自动取消。</li>-->
+    <!--    </ul>-->
+    <p>{{ sysTranslationsDict['deposit.important.tip'] }}：</p>
     <ul>
-      <li>请确保汇款金额与显示金额一致。</li>
-      <li>汇款时备注正确的交易信息。</li>
-      <li>若半小时内未完成支付，本次存款将自动取消。</li>
+      <li>{{ sysTranslationsDict['deposit.important.tip.no1'] }}</li>
+      <li>{{ sysTranslationsDict['deposit.important.tip.no2'] }}</li>
+      <li>{{ sysTranslationsDict['deposit.important.tip.no3'] }}</li>
     </ul>
   </n-card>
   <n-flex
+    style="margin-bottom: 30px"
     justify="center"
     gap="large"
   >
     <n-button
       type="error"
       @click="cancelDeposit"
-      >未支付并取消存款
+    >
+      <!--      未支付并取消存款-->
+      {{ sysTranslationsDict['deposit.cancel'] }}
     </n-button>
     <n-button
       type="primary"
       @click="uploadVoucher"
-      >已支付并上传凭证
+    >
+      <!--      已支付并上传凭证-->
+      {{ sysTranslationsDict['deposit.upload.voucher'] }}
     </n-button>
   </n-flex>
 
@@ -70,11 +93,17 @@
     :height="500"
   >
     <template #header>
-      <div class="drawer-header">上传回执</div>
+      <div class="drawer-header">
+        <!--        上传回执-->
+        {{ sysTranslationsDict['deposit.upload.receipt'] }}
+      </div>
     </template>
     <div class="custom-drawer">
       <n-card>
-        <div style="margin-bottom: 10px">请上传该存款的完整信息回执</div>
+        <!--        <div style="margin-bottom: 10px">请上传该存款的完整信息回执</div>-->
+        <div style="margin-bottom: 10px">
+          {{ sysTranslationsDict['deposit.upload.receipt.title'] }}
+        </div>
         <div class="drawer-content">
           <n-upload
             v-model:file-list="fileList"
@@ -85,21 +114,34 @@
             list-type="image-card"
             class="upload-section"
           >
-            上传回执
+            <!--            上传回执-->
+            {{ sysTranslationsDict['deposit.upload.receipt'] }}
           </n-upload>
-          <a
-            href="#"
-            target="_blank"
-            class="example-link"
-            >回执示例</a
-          >
+          <!--          <a-->
+          <!--            href="#"-->
+          <!--            target="_blank"-->
+          <!--            class="example-link"-->
+          <!--            >回执示例</a-->
+          <!--          >-->
         </div>
         <div class="requirement-section">
-          <p class="requirement-title">回执单要求：</p>
+          <p class="requirement-title">
+            <!--            回执单要求：-->
+            {{ sysTranslationsDict['deposit.receipt.requirement'] }}
+          </p>
           <ul class="requirement-list">
-            <li>清晰显示汇款金额和收款人信息。</li>
-            <li>文件格式支持 JPG、PNG、PDF。</li>
-            <li>文件大小不超过 5MB。</li>
+            <!--            <li>清晰显示汇款金额和收款人信息。</li>-->
+            <!--            <li>文件格式支持 JPG、PNG、PDF。</li>-->
+            <!--            <li>文件大小不超过 5MB。</li>-->
+            <li>
+              {{ sysTranslationsDict['deposit.receipt.requirement.no1'] }}
+            </li>
+            <li>
+              {{ sysTranslationsDict['deposit.receipt.requirement.no2'] }}
+            </li>
+            <li>
+              {{ sysTranslationsDict['deposit.receipt.requirement.no3'] }}
+            </li>
           </ul>
         </div>
       </n-card>
@@ -110,11 +152,14 @@
         class="submit-button"
         block
         @click="submitVoucher"
-        >提交凭证并确认付款
+      >
+        <!--        提交凭证并确认付款-->
+        {{ sysTranslationsDict['sys.submit'] }}
       </n-button>
       <div style="margin-top: 10px">
         <n-icon :component="AlertCircleOutline"></n-icon>
-        请勿上传虚假交易截图，违者将面临扣盈利和封号处罚！
+        <!--        请勿上传虚假交易截图，违者将面临扣盈利和封号处罚！-->
+        {{ sysTranslationsDict['deposit.upload.alert'] }}
       </div>
     </n-card>
   </n-drawer>
@@ -126,15 +171,17 @@ const props = withDefaults(
     modelValue?: any;
   }>(),
   {
-    modelValue: () => {},
-  }
+    modelValue: () => {
+    },
+  },
 );
 
 import { AlertCircleOutline } from '@vicons/ionicons5';
 import { copyToClipBoard } from 'billd-utils';
 import { useMessage } from 'naive-ui';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useCacheStore } from '@/store/cache';
 
 import { uploadFile } from '@/api/upload.ts';
 import { getUseRechargeTarget, updateRecharge } from '@/api/wallet.ts';
@@ -151,7 +198,9 @@ const showUploadModal = ref(false);
 const data = ref<any>({
   amount: 200,
 });
-
+const sysTranslationsDict = computed(() => {
+  return useCacheStore().sysTranslationsDict;
+});
 const targetBank = ref<any>({
   holder_name: '张三',
   card_number: '6216000000000000000',
@@ -166,6 +215,19 @@ const remainingSeconds = ref<any>(remainingTime.value % 60);
 
 let timer: NodeJS.Timer;
 
+// 处理带变量的国际化文本
+const translateWithVars = (key, variables = {}) => {
+  const template = sysTranslationsDict.value[key] || key;
+  let result = template;
+
+  // 替换模板中的变量
+  Object.keys(variables).forEach((varName) => {
+    const regex = new RegExp(`\\{${varName}\\}`);
+    result = result.replace(regex, variables[varName]);
+  });
+
+  return result;
+};
 const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);

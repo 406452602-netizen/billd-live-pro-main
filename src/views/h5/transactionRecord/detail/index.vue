@@ -8,7 +8,7 @@
         >
           <n-icon :component="ArrowBack" />
         </n-button>
-        <div>我的银行卡</div>
+        <div>{{ sysTranslationsDict['wallet.bank'] }}</div>
         <div>&nbsp;</div>
       </div>
       <div class="mobile-steps">
@@ -99,16 +99,12 @@
 
 <script setup lang="ts">
 import { ArrowBack } from '@vicons/ionicons5';
-// import { useMessage } from 'naive-ui';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-// const message = useMessage();
 
 import { getRechargeRecords, updateRecharge } from '@/api/wallet.ts';
 import { auditStatusEnum } from '@/interface.ts';
-// import { mobileRouterName } from '@/router';
-// import { useUserStore } from '@/store/user';
+import { useCacheStore } from '@/store/cache';
 
 import Step1 from './step1.vue';
 import Step2 from './step2.vue';
@@ -120,8 +116,17 @@ import Step4 from './step4.vue';
 const router = useRouter();
 const route = useRoute();
 const rechargeRecord = ref<any>({});
+const sysTranslationsDict = computed(() => {
+  return useCacheStore().sysTranslationsDict;
+});
 
-const steps = ref(['提交订单', '待您付款', '上传凭证', '订单完成']);
+// const steps = ref(['提交订单', '待您付款', '上传凭证', '订单完成']);
+const steps = ref([
+  sysTranslationsDict.value['deposit.step.submit.order'],
+  sysTranslationsDict.value['deposit.step.upon.payment'],
+  sysTranslationsDict.value['deposit.step.upload.voucher'],
+  sysTranslationsDict.value['deposit.step.order.completed'],
+]);
 
 const result = ref<any>({
   status: 'success',

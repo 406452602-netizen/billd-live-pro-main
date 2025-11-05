@@ -1,5 +1,27 @@
 <template>
   <div class="h5-integration-game-wrap">
+    <!-- 临时游戏链接按钮（当window.open被拦截时显示） -->
+    <n-modal
+      v-model:show="showGameButton"
+      preset="dialog"
+      :title="sysTranslationsDict['sys.open']"
+      :close-on-esc="false"
+      :close-on-click-modal="false"
+    >
+      <div style="text-align: center; padding: 20px">
+        <p>
+          {{ sysTranslationsDict['sys.open.window.error'] }}
+        </p>
+        <n-button
+          type="primary"
+          size="large"
+          style="margin-top: 20px"
+          @click="handleManualOpenGame"
+        >
+          {{ sysTranslationsDict['sys.open'] }}
+        </n-button>
+      </div>
+    </n-modal>
     <!-- 页面头部 -->
     <div class="header">
       <n-button
@@ -88,8 +110,8 @@
         {{ currentLocale === 'zh' ? '正在进入游戏...' : 'Entering game...' }}
       </p>
       <p
-        class="game-loading-name"
         v-if="currentGame"
+        class="game-loading-name"
       >
         {{ getLocalizedGameName(currentGame) }}
       </p>
@@ -117,6 +139,8 @@ const games = ref<any[]>([]);
 const gameLoading = ref(false);
 const currentGame = ref<any>(null);
 const integrationGameId = ref<string | number>();
+const showGameButton = ref(false);
+const gameUrl = ref('');
 
 // 心跳检测相关变量
 let keepAliveTimer: ReturnType<typeof setInterval> | null = null;
@@ -127,6 +151,9 @@ const currentLocale = computed(() => {
   return cacheStore.locale || 'en';
 });
 
+const sysTranslationsDict = computed(() => {
+  return useCacheStore().sysTranslationsDict;
+});
 // 获取游戏的本地化名称
 const getLocalizedGameName = (game: any) => {
   if (!game.gameNameMappings || !game.gameNameMappings.length) {
@@ -192,6 +219,20 @@ const startKeepAlive = () => {
   }, HEARTBEAT_INTERVAL);
 };
 
+const handleManualOpenGame = () => {
+  if (gameUrl.value) {
+    try {
+      const newWindow = window.open(gameUrl.value, '_blank');
+      if (newWindow) {
+        newWindow.focus();
+        showGameButton.value = false;
+      }
+    } catch (error) {
+      console.error('手动打开游戏时出错:', error);
+    }
+  }
+};
+
 // 停止心跳检测
 const stopKeepAlive = () => {
   console.log('stopKeepAlive 停止心跳检测');
@@ -239,8 +280,31 @@ const enterGame = (game: any) => {
 
       if (res && res.code === 200 && res.data) {
         userStore.getUserInfo();
-        // 在新窗口中打开游戏
-        window.open(res.data, '_blank', 'noopener,noreferrer');
+        // 存储游戏URL以便在需要时使用
+        gameUrl.value = res.data;
+        try {
+          // 在用户交互上下文中直接打开窗口
+          const newWindow = window.open('', '_blank');
+          if (newWindow) {
+            // 立即设置location，避免被拦截
+            newWindow.location.href = res.data;
+            // 启动一个定时器检查窗口是否被关闭
+            if (newWindow && !newWindow.closed) {
+              newWindow.focus();
+            } else {
+              // 如果窗口被关闭，可能是被拦截了，显示手动打开按钮
+              showGameButton.value = true;
+              console.log('窗口可能被拦截，显示手动打开按钮');
+            }
+          } else {
+            // 方法2：如果窗口创建失败，提示用户手动操作
+            console.error('无法打开新窗口，可能被浏览器拦截');
+            showGameButton.value = true;
+          }
+        } catch (error) {
+          console.error('打开新窗口失败:', error);
+          showGameButton.value = true;
+        }
         // 启动心跳检测
         startKeepAlive();
       } else {

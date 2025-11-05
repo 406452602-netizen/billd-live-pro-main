@@ -152,9 +152,9 @@
     <n-button
       type="primary"
       class="submit-button"
-      @click="submit"
       :disabled="isFormValid"
       block
+      @click="submit"
     >
       <!-- sys.deposit.money: 存款文本（中英文切换） -->
       {{ sysTranslationsDict['sys.deposit.money'] }}
