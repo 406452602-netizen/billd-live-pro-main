@@ -24,6 +24,7 @@
           v-else
           class="avatar-name"
         >
+          <!-- sys.login: 登录文本, sys.register: 注册文本（中英文切换） -->
           <n-button @click="router.push({ name: mobileRouterName.h5Login })"
             >{{ sysTranslationsDict['sys.login'] }}/{{
               sysTranslationsDict['sys.register']

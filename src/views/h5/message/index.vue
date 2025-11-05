@@ -27,6 +27,7 @@
         name="chap1"
         tab="通知"
       >
+        <!-- sys.message.empty: 消息空文本（中英文切换） -->
         <n-empty
           size="large"
           :description="sysTranslationsDict['sys.message.empty']"
@@ -44,6 +45,7 @@
         name="chap2"
         tab="活动"
       >
+        <!-- sys.message.empty: 消息空文本（中英文切换） -->
         <n-empty
           size="large"
           :description="sysTranslationsDict['sys.message.empty']"
@@ -57,6 +59,7 @@
         name="chap3"
         tab="公告"
       >
+        <!-- sys.message.empty: 消息空文本（中英文切换） -->
         <n-empty
           size="large"
           :description="sysTranslationsDict['sys.message.empty']"
@@ -70,6 +73,7 @@
         name="chap4"
         tab="充提"
       >
+        <!-- sys.message.empty: 消息空文本（中英文切换） -->
         <n-empty
           size="large"
           :description="sysTranslationsDict['sys.message.empty']"

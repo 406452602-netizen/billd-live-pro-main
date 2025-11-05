@@ -1,6 +1,7 @@
 <template>
   <n-card>
     <div class="form-group">
+      <!-- wallet.pay.method: 支付方式文本（中英文切换） -->
       <label
         class="label"
         for="amount"
@@ -16,12 +17,14 @@
           :key="bankTypeEnum.BANK"
           :value="bankTypeEnum.BANK"
         >
+          <!-- wallet.rapid.card: 快捷卡文本（中英文切换） -->
           {{ sysTranslationsDict['wallet.rapid.card'] }}
         </n-radio-button>
         <n-radio-button
           :key="bankTypeEnum.VIRTUAL"
           :value="bankTypeEnum.VIRTUAL"
         >
+          <!-- wallet.rapid.virtual: 虚拟支付文本（中英文切换） -->
           {{ sysTranslationsDict['wallet.rapid.virtual'] }}
         </n-radio-button>
       </n-radio-group>
@@ -31,12 +34,14 @@
       v-if="formData.bank_type === bankTypeEnum.BANK"
       class="form-group"
     >
+      <!-- wallet.pay.name: 支付名称文本（中英文切换） -->
       <label
         class="label"
         for="amount"
         >{{ sysTranslationsDict['wallet.pay.name'] }}</label
       >
       <!-- 使用 NInputNumber 替换 input 组件 -->
+      <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
       <n-input
         v-model:value="formData.username"
         :min="0"
@@ -48,6 +53,7 @@
       v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
       class="form-group"
     >
+      <!-- wallet.virtual.currency: 虚拟货币文本（中英文切换） -->
       <label
         class="label"
         for="amount"
@@ -73,6 +79,7 @@
       v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
       class="form-group"
     >
+      <!-- wallet.virtual.currency: 虚拟货币文本, sys.protocol: 协议文本（中英文切换） -->
       <label
         class="label"
         for="amount"
@@ -97,6 +104,7 @@
     </div>
 
     <div class="form-group">
+      <!-- wallet.pay.amount: 支付金额文本（中英文切换） -->
       <label
         class="label"
         for="amount"
@@ -120,7 +128,9 @@
         <n-radio
           :value="-1"
           @click="handleCustomAmount"
-          >{{ sysTranslationsDict['sys.custom'] }}
+        >
+          <!-- sys.custom: 自定义文本（中英文切换） -->
+          {{ sysTranslationsDict['sys.custom'] }}
         </n-radio>
       </n-radio-group>
     </div>
@@ -129,6 +139,7 @@
       class="form-group"
     >
       <!-- 使用 NInputNumber 替换 input 组件 -->
+      <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
       <n-input-number
         id="amount"
         v-model="formData.amount"
@@ -144,14 +155,16 @@
       @click="submit"
       :disabled="isFormValid"
       block
-      >{{ sysTranslationsDict['sys.deposit.money'] }}
+    >
+      <!-- sys.deposit.money: 存款文本（中英文切换） -->
+      {{ sysTranslationsDict['sys.deposit.money'] }}
     </n-button>
   </n-card>
 </template>
 
 <script setup lang="ts">
 import { useMessage } from 'naive-ui';
-import { ref, onMounted, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { createRechargeRecord, getBanks } from '@/api/wallet.ts';
 import { bankTypeEnum } from '@/interface.ts';

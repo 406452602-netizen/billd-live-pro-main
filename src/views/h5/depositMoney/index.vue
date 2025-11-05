@@ -8,6 +8,7 @@
         >
           <n-icon :component="ArrowBack" />
         </n-button>
+        <!-- sys.deposit.money: 存款文本（中英文切换） -->
         <div>{{ sysTranslationsDict['sys.deposit.money'] }}</div>
         <div>&nbsp;</div>
       </div>

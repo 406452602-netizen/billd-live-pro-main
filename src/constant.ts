@@ -193,6 +193,8 @@ export const DEFAULT_ROLE_INFO = {
 export const COOKIE_KEY = {
   thirdLoginInfo: 'thirdLoginInfo',
   rememberLogin: 'rememberLogin',
+  sysTranslationsDict: 'sysTranslationsDict',
+  sysTranslationsDictTimestamp: 'sysTranslationsDictTimestamp',
 };
 
 export const lsKeyPrefix = 'billd_live___';

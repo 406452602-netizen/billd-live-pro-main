@@ -13,18 +13,21 @@
       </n-button>
       <!-- 菜单 -->
       <div class="menu">
+        <!-- sys.today: 今日文本（中英文切换） -->
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.TODAY.id }"
           @click="changeTab(MATCH_LIST_TYPE.TODAY.id)"
         >
           {{ sysTranslationsDict['sys.today'] }}
         </button>
+        <!-- sys.rolling.ball: 滚球文本（中英文切换） -->
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.ROLLING_BALL.id }"
           @click="changeTab(MATCH_LIST_TYPE.ROLLING_BALL.id)"
         >
           {{ sysTranslationsDict['sys.rolling.ball'] }}
         </button>
+        <!-- sys.morning.session: 早场文本（中英文切换） -->
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.MORNING_SESSION.id }"
           @click="changeTab(MATCH_LIST_TYPE.MORNING_SESSION.id)"

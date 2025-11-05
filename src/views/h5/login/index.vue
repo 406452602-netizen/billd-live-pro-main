@@ -75,6 +75,7 @@
             <!-- 登录时显示人机校验 -->
             <n-form-item path="captcha">
               <div style="display: flex; gap: 10px; align-items: center">
+                <!-- sys.captcha: 验证码文本（中英文切换） -->
                 <n-input
                   v-model:value="captchaInput"
                   :placeholder="sysTranslationsDict['sys.captcha'] || '验证码'"
@@ -119,23 +120,23 @@
             :model="loginForm"
             :rules="registerRules"
           >
-            <div
-              style="
-                margin-bottom: 15px;
-                padding: 10px;
-                background-color: rgba(0, 42, 102, 0.7);
-                border: 1px solid rgba(0, 168, 255, 0.5);
-                border-radius: 5px;
-                font-size: 12px;
-                color: #ffffff;
-                box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
-              "
-            >
-              <div>
-                用户名规则：只能使用字母、数字和下划线，不能以数字开头，不能使用特殊符号和中文
-              </div>
-              <div>密码规则：必须包含字母和数字</div>
-            </div>
+            <!--            <div-->
+            <!--              style="-->
+            <!--                margin-bottom: 15px;-->
+            <!--                padding: 10px;-->
+            <!--                background-color: rgba(0, 42, 102, 0.7);-->
+            <!--                border: 1px solid rgba(0, 168, 255, 0.5);-->
+            <!--                border-radius: 5px;-->
+            <!--                font-size: 12px;-->
+            <!--                color: #ffffff;-->
+            <!--                box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);-->
+            <!--              "-->
+            <!--            >-->
+            <!--              <div>-->
+            <!--                用户名规则：只能使用字母、数字和下划线，不能以数字开头，不能使用特殊符号和中文-->
+            <!--              </div>-->
+            <!--              <div>密码规则：必须包含字母和数字</div>-->
+            <!--            </div>-->
             <n-form-item path="username">
               <n-input
                 v-model:value="loginForm.username"
@@ -176,24 +177,15 @@
                 </template>
               </n-input>
             </n-form-item>
-            <n-form-item path="inviteCode">
-              <n-input
-                v-model:value="loginForm.inviteCode"
-                placeholder="invite code"
-                size="large"
-                @keyup.enter="handleLoginSubmit"
-              >
-                <template #prefix>
-                  <n-icon :component="MailOpenOutline" />
-                </template>
-              </n-input>
-            </n-form-item>
+            <!-- 邀请码输入框已移除，但保留通过路由参数获取邀请码的功能 -->
           </n-form>
 
           <div class="bottom-button">
+            <!-- sys.remember.password: 记住密码文本（中英文切换） -->
             <n-checkbox v-model:checked="loginForm.rememberLogin"
               >{{ sysTranslationsDict['sys.remember.password'] }}
             </n-checkbox>
+            <!-- sys.forgot.password: 忘记密码文本（中英文切换） -->
             <n-button text>
               {{ sysTranslationsDict['sys.forgot.password'] }}？
             </n-button>
@@ -204,6 +196,7 @@
             :disabled="isSubmitting"
             @click="handleLoginSubmit"
           >
+            <!-- sys.login: 登录文本, sys.register: 注册文本（中英文切换） -->
             {{
               isLogin
                 ? sysTranslationsDict['sys.login']
@@ -220,8 +213,9 @@
               @click="handleRegister"
             >
               <n-icon :component="PersonCircleOutline" />
-              <template #description
-                >{{
+              <template #description>
+                <!-- sys.register: 注册文本, sys.login: 登录文本（中英文切换） -->
+                {{
                   isLogin
                     ? sysTranslationsDict['sys.register']
                     : sysTranslationsDict['sys.login']
@@ -261,12 +255,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  Home,
-  LockOpen,
-  MailOpenOutline,
-  PersonCircleOutline,
-} from '@vicons/ionicons5';
+import { Home, LockOpen, PersonCircleOutline } from '@vicons/ionicons5';
 // eslint-disable-next-line import/order
 import { darkTheme } from 'naive-ui';
 
@@ -360,17 +349,17 @@ const getCaptcha = async () => {
 };
 // 登录模式的校验规则
 const loginRules = {
-  username: { required: true, message: '请输入用户名', trigger: 'blur' },
-  password: { required: true, message: '请输入密码', trigger: 'blur' },
-  invite_code: {
-    validator: (_, value) => {
-      if (!value) {
-        return true;
-      } else if (value.length != 14) {
-        throw Error('邀请码格式不正确');
-      }
-      return true;
-    },
+  username: {
+    required: true,
+    // 请输入用户名提示
+    message: sysTranslationsDict.value['login.username.request'],
+    trigger: 'blur',
+  },
+  password: {
+    required: true,
+    // 请输入密码提示
+    message: sysTranslationsDict.value['login.password.request'],
+    trigger: 'blur',
   },
 };
 
@@ -381,17 +370,20 @@ const registerRules = {
     trigger: 'blur',
     validator: (_, value) => {
       if (!value) {
-        return new Error('请输入用户名');
+        // 请输入用户名提示
+        return new Error(sysTranslationsDict.value['login.username.request']);
       }
       if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(value)) {
-        return new Error('用户名只能包含字母、数字、下划线，且不能以数字开头');
+        // 用户名只能包含字母、数字、下划线，且不能以数字开头
+        return new Error(sysTranslationsDict.value['register.username.format']);
       }
       return true;
     },
   },
   password: {
     required: true,
-    message: '密码至少包含字母和数字，长度不少于6位',
+    // 密码至少包含字母和数字，长度不少于6位
+    message: sysTranslationsDict.value['register.password.format'],
     trigger: 'blur',
     pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/,
   },
@@ -399,26 +391,21 @@ const registerRules = {
     required: true,
     trigger: 'blur',
     validator: (_, value) => {
-      console.log('confirmPassword', _);
       if (value === '') {
-        return new Error('请确认密码');
+        // 请输入确认密码提示
+        return new Error(sysTranslationsDict.value['login.password.request']);
       }
       if (value != loginForm.value.password) {
-        return new Error('两次输入的密码不一致');
+        // 两次输入的密码不一致
+        return new Error(
+          sysTranslationsDict.value['register.password.confirm'] ||
+            '两次输入的密码不一致'
+        );
       }
       return true;
     },
   },
-  invite_code: {
-    validator: (_, value) => {
-      if (!value) {
-        return true;
-      } else if (value.length != 14) {
-        throw Error('邀请码格式不正确');
-      }
-      return true;
-    },
-  },
+  // 邀请码验证规则已移除，因为不再通过前端输入邀请码
 };
 
 onMounted(() => {

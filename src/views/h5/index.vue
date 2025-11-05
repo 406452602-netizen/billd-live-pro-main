@@ -69,13 +69,15 @@
           class="btn"
           @click="router.push({ name: mobileRouterName.h5Login })"
         >
-          <!--          {{ sysTranslationsDict['sys.login'] }}-->
+          <!-- sys.login: 登录文本（中英文切换） -->
           <n-flex vertical>
+            <!-- sys.have.not: 未提示文本, sys.login: 登录文本（中英文切换） -->
             <div>
               {{
                 `${sysTranslationsDict['sys.have.not']} ${sysTranslationsDict['sys.login']}`
               }}
             </div>
+            <!-- sys.login: 登录文本, sys.register: 注册文本, sys.view: 查看文本（中英文切换） -->
             <div style="color: #8e8b8b; font-size: 12px">
               {{
                 `${sysTranslationsDict['sys.login']}/${sysTranslationsDict['sys.register']}
@@ -112,6 +114,7 @@
               height="40"
             />
           </div>
+          <!-- sys.deposit.money: 存款文本（中英文切换） -->
           <div class="menu-title">
             {{ sysTranslationsDict['sys.deposit.money'] }}
           </div>
@@ -128,6 +131,7 @@
               height="40"
             />
           </div>
+          <!-- sys.withdraw.money: 提款文本（中英文切换） -->
           <div class="menu-title">
             {{ sysTranslationsDict['sys.withdraw.money'] }}
           </div>
@@ -144,6 +148,7 @@
               height="40"
             />
           </div>
+          <!-- sys.convert: 转换文本（中英文切换） -->
           <div class="menu-title">
             {{ sysTranslationsDict['sys.convert'] }}
           </div>
@@ -156,6 +161,7 @@
               height="40"
             />
           </div>
+          <!-- sys.promotion: 推广文本（中英文切换） -->
           <div class="menu-title">
             {{ sysTranslationsDict['sys.promotion'] }}
           </div>
@@ -177,6 +183,7 @@
         class="section-title"
         style="padding: 0 5vw; margin-bottom: 15px"
       >
+        <!-- sys.game.list: 游戏列表文本（中英文切换） -->
         <h3 style="margin: 0; font-size: 18px; color: #333">
           {{ sysTranslationsDict['sys.game.list'] }}
         </h3>

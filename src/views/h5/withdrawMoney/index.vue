@@ -10,13 +10,16 @@
           >
             <n-icon :component="ArrowBack" />
           </n-button>
+          <!-- wallet.withdraw: 提现文本（中英文切换） -->
           <div>{{ sysTranslationsDict['wallet.withdraw'] }}</div>
           <!-- 显示钱包余额 -->
+          <!-- wallet.balance: 钱包余额文本（中英文切换） -->
           <div>
             {{ sysTranslationsDict['wallet.balance'] }}:
             {{ userStore.userInfo?.wallet?.balance || 0 }} 元
           </div>
           <!-- 添加按钮 -->
+          <!-- sys.wallet.add: 添加钱包文本（中英文切换） -->
           <n-button
             type="primary"
             size="small"
@@ -32,23 +35,22 @@
       v-model:value="activeTab"
       type="line"
     >
-      <n-tab-pane
-        name="1"
-        :tab="sysTranslationsDict['wallet.card.withdrawal']"
-      />
-      <n-tab-pane
-        name="2"
-        :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
-      />
+      <!-- wallet.card.withdrawal: 银行卡提现文本（中英文切换） -->
+        <n-tab-pane
+          name="1"
+          :tab="sysTranslationsDict['wallet.card.withdrawal']"
+        />
+      <!-- wallet.virtual.withdrawal: 虚拟账户提现文本（中英文切换） -->
+        <n-tab-pane
+          name="2"
+          :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
+        />
     </n-tabs>
     <n-card class="form-container">
       <div class="form-group">
+        <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
         <label class="label">
-          {{
-            activeTab === '1'
-              ? sysTranslationsDict['wallet.bank.card']
-              : sysTranslationsDict['wallet.virtual.account']
-          }}
+          {{ activeTab === '1' ? sysTranslationsDict['wallet.bank.card'] : sysTranslationsDict['wallet.virtual.account'] }}
         </label>
         <!-- 显示银行卡/虚拟账号列表 -->
         <div
@@ -63,17 +65,13 @@
           </div>
           <div class="account-number">{{ account.card_number }}</div>
         </div>
+        <!-- sys.placeholder.chose: 选择提示文本（中英文切换） -->
+        <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
         <div
           v-if="showAccountError"
           class="error-message"
         >
-          <!--          请先选择银行卡-->
-          {{ sysTranslationsDict['sys.placeholder.chose'] }}
-          {{
-            activeTab === '1'
-              ? sysTranslationsDict['wallet.bank.card']
-              : sysTranslationsDict['wallet.virtual.account']
-          }}
+          {{ sysTranslationsDict['sys.placeholder.chose'] }} {{ activeTab === '1' ? sysTranslationsDict['wallet.bank.card'] : sysTranslationsDict['wallet.virtual.account'] }}
         </div>
       </div>
       <!-- 原有金额选择代码保持不变 -->
@@ -91,10 +89,12 @@
           >
             {{ amount }}
           </n-radio-button>
+          <!-- sys.custom: 自定义文本（中英文切换） -->
           <n-radio-button
             :value="-1"
             @click="handleCustomAmountClick"
-            >{{ sysTranslationsDict['sys.custom'] }}
+          >
+            {{ sysTranslationsDict['sys.custom'] }}
           </n-radio-button>
         </n-radio-group>
       </div>
@@ -103,13 +103,15 @@
         class="form-group"
       >
         <!-- 使用 NInputNumber 替换 input 组件 -->
+        <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
         <n-input-number
           id="amount"
           v-model:value="amount"
-          :min="0"
-          :placeholder="sysTranslationsDict['sys.placeholder.input']"
+            :min="0"
+            :placeholder="sysTranslationsDict['sys.placeholder.input']"
         />
       </div>
+      <!-- wallet.confirm: 确认按钮文本（中英文切换） -->
       <n-button
         type="primary"
         block
@@ -122,6 +124,7 @@
     <!-- 原有提现记录代码保持不变 -->
     <n-card class="history-container">
       <template #header>
+        <!-- wallet.withdraw.record: 提现记录文本（中英文切换） -->
         <div>{{ sysTranslationsDict['wallet.withdraw.record'] }}</div>
       </template>
       <!-- 使用 NDataTable 替换 table 组件 -->
@@ -162,6 +165,7 @@ const virtualAccounts = ref<any[]>([]);
 const withdrawalRecords = ref<any[]>([]);
 const message = useMessage();
 const activeTab = ref('1');
+// 国际化翻译字典 - 从缓存存储中获取当前语言的翻译文本（sysTranslationsDict）
 const sysTranslationsDict = computed(() => {
   return useCacheStore().sysTranslationsDict;
 });
@@ -189,21 +193,25 @@ function selectAccount(id: number) {
 
 const columns = [
   {
+    // wallet.amount: 金额文本（中英文切换）
     title: sysTranslationsDict.value['wallet.amount'],
     key: 'amount',
   },
   {
+    // wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换）
     title: `${sysTranslationsDict.value['wallet.bank.card']}/${sysTranslationsDict.value['wallet.virtual.account']}`,
     key: 'bank.bank_card',
     render: (row) =>
       `${row.bankCard.bank.bank_name} - ${row.bankCard.card_number}`,
   },
   {
+    // sys.review.time: 审核时间文本（中英文切换）
     title: sysTranslationsDict.value['sys.review.time'],
     key: 'reviewed_at',
     render: (row) => {
       return row.reviewed_at
         ? row.reviewed_at
+        // sys.unreviewed: 未审核文本（中英文切换）
         : sysTranslationsDict.value['sys.unreviewed'];
     },
   },

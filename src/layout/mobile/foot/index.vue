@@ -13,6 +13,7 @@
         width="24"
         height="24"
       ></n-image>
+      <!-- 动态国际化文本（中英文切换） -->
       <span class="menu-key">{{ sysTranslationsDict[item.key] }}</span>
     </div>
   </div>
