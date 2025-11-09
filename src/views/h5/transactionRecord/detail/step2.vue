@@ -122,20 +122,20 @@
         <div class="requirement-section">
           <p class="requirement-title">
             <!--            回执单要求：-->
-            {{ sysTranslationsDict['deposit.receipt.requirement'] }}
+            {{ sysTranslationsDict['deposit.receipt.requirements'] }}
           </p>
           <ul class="requirement-list">
             <!--            <li>清晰显示汇款金额和收款人信息。</li>-->
             <!--            <li>文件格式支持 JPG、PNG、PDF。</li>-->
             <!--            <li>文件大小不超过 5MB。</li>-->
             <li>
-              {{ sysTranslationsDict['deposit.receipt.requirement.no1'] }}
+              {{ sysTranslationsDict['deposit.receipt.requirements.no1'] }}
             </li>
             <li>
-              {{ sysTranslationsDict['deposit.receipt.requirement.no2'] }}
+              {{ sysTranslationsDict['deposit.receipt.requirements.no2'] }}
             </li>
             <li>
-              {{ sysTranslationsDict['deposit.receipt.requirement.no3'] }}
+              {{ sysTranslationsDict['deposit.receipt.requirements.no3'] }}
             </li>
           </ul>
         </div>

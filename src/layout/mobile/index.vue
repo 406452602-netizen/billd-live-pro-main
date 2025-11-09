@@ -1,11 +1,15 @@
 <template>
   <div class="layout">
     <!--    <HeadCpt></HeadCpt>-->
-    <router-view v-slot="{ Component }">
-      <component :is="Component"></component>
-    </router-view>
-    <LoginModal v-if="appStore.showLoginModal"></LoginModal>
-    <BottomMenu></BottomMenu>
+    <div class="show-display">
+      <router-view v-slot="{ Component }">
+        <component :is="Component"></component>
+      </router-view>
+      <LoginModal v-if="appStore.showLoginModal"></LoginModal>
+    </div>
+    <div class="bottom">
+      <BottomMenu></BottomMenu>
+    </div>
   </div>
 </template>
 
@@ -18,4 +22,18 @@ import BottomMenu from './foot/index.vue';
 const appStore = useAppStore();
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.show-display {
+  height: 90vh;
+  overflow-y: scroll;
+}
+
+.bottom {
+  height: 10vh;
+}
+</style>

@@ -137,7 +137,7 @@ watch(danmuList.value, () => {
 .customer-service-container {
   display: flex;
   flex-direction: column;
-  height: 85vh;
+  height: 88vh;
   padding: 10px;
   background-color: #f5f5f5;
 }

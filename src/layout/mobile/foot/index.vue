@@ -64,10 +64,6 @@ function changeRoute(item: (typeof menuItems)[0]) {
 
 <style lang="scss" scoped>
 .bottom-menu {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: flex;
   background-color: #fff;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
