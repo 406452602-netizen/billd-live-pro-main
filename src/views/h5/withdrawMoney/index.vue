@@ -36,21 +36,25 @@
       type="line"
     >
       <!-- wallet.card.withdrawal: 银行卡提现文本（中英文切换） -->
-        <n-tab-pane
-          name="1"
-          :tab="sysTranslationsDict['wallet.card.withdrawal']"
-        />
+      <n-tab-pane
+        name="1"
+        :tab="sysTranslationsDict['wallet.card.withdrawal']"
+      />
       <!-- wallet.virtual.withdrawal: 虚拟账户提现文本（中英文切换） -->
-        <n-tab-pane
-          name="2"
-          :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
-        />
+      <n-tab-pane
+        name="2"
+        :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
+      />
     </n-tabs>
     <n-card class="form-container">
       <div class="form-group">
         <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
         <label class="label">
-          {{ activeTab === '1' ? sysTranslationsDict['wallet.bank.card'] : sysTranslationsDict['wallet.virtual.account'] }}
+          {{
+            activeTab === '1'
+              ? sysTranslationsDict['wallet.bank.card']
+              : sysTranslationsDict['wallet.virtual.account']
+          }}
         </label>
         <!-- 显示银行卡/虚拟账号列表 -->
         <div
@@ -71,7 +75,12 @@
           v-if="showAccountError"
           class="error-message"
         >
-          {{ sysTranslationsDict['sys.placeholder.chose'] }} {{ activeTab === '1' ? sysTranslationsDict['wallet.bank.card'] : sysTranslationsDict['wallet.virtual.account'] }}
+          {{ sysTranslationsDict['sys.placeholder.chose'] }}
+          {{
+            activeTab === '1'
+              ? sysTranslationsDict['wallet.bank.card']
+              : sysTranslationsDict['wallet.virtual.account']
+          }}
         </div>
       </div>
       <!-- 原有金额选择代码保持不变 -->
@@ -107,8 +116,8 @@
         <n-input-number
           id="amount"
           v-model:value="amount"
-            :min="0"
-            :placeholder="sysTranslationsDict['sys.placeholder.input']"
+          :min="0"
+          :placeholder="sysTranslationsDict['sys.placeholder.input']"
         />
       </div>
       <!-- wallet.confirm: 确认按钮文本（中英文切换） -->
@@ -211,8 +220,8 @@ const columns = [
     render: (row) => {
       return row.reviewed_at
         ? row.reviewed_at
-        // sys.unreviewed: 未审核文本（中英文切换）
-        : sysTranslationsDict.value['sys.unreviewed'];
+        : // sys.unreviewed: 未审核文本（中英文切换）
+          sysTranslationsDict.value['sys.unreviewed'];
     },
   },
 ];

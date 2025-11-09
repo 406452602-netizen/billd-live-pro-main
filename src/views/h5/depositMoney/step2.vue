@@ -18,7 +18,7 @@
     <div class="info">
       <span>{{ targetBank.holder_name }}</span>
       <span style="font-size: 10px; color: #8e8b8b"
-      >（{{ targetBank.bank.bank_name }}）</span
+        >（{{ targetBank.bank.bank_name }}）</span
       >
       <n-button
         size="small"
@@ -35,20 +35,18 @@
         size="small"
         style="float: right"
         @click="copyText(targetBank.card_number)"
-      >{{ sysTranslationsDict['sys.copy'] }}
+        >{{ sysTranslationsDict['sys.copy'] }}
       </n-button>
     </div>
     <div class="info">
-      <span>
-        <!--        金额-->
+      <!--        金额-->
       <span>{{ sysTranslationsDict['sys.deposit.money'] }}：</span>
-      >
       <span>{{ data.amount }}</span>
       <n-button
         size="small"
         style="float: right"
         @click="copyText(data.amount.toString())"
-      >{{ sysTranslationsDict['sys.copy'] }}
+        >{{ sysTranslationsDict['sys.copy'] }}
       </n-button>
     </div>
   </n-card>
@@ -113,6 +111,7 @@
             :default-upload="false"
             list-type="image-card"
             class="upload-section"
+            accept=".jpg,.jpeg,.png,.pdf"
           >
             <!--            上传回执-->
             {{ sysTranslationsDict['deposit.upload.receipt'] }}
@@ -171,9 +170,8 @@ const props = withDefaults(
     modelValue?: any;
   }>(),
   {
-    modelValue: () => {
-    },
-  },
+    modelValue: () => {},
+  }
 );
 
 import { AlertCircleOutline } from '@vicons/ionicons5';
@@ -181,10 +179,10 @@ import { copyToClipBoard } from 'billd-utils';
 import { useMessage } from 'naive-ui';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useCacheStore } from '@/store/cache';
 
 import { uploadFile } from '@/api/upload.ts';
 import { getUseRechargeTarget, updateRecharge } from '@/api/wallet.ts';
+import { useCacheStore } from '@/store/cache';
 
 import type { UploadFileInfo } from 'naive-ui';
 

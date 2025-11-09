@@ -68,6 +68,7 @@
             }`"
           />
         </n-form-item>
+        <!--选择类型-->
         <n-form-item
           v-if="cardTypeOption.length > 0"
           :label="
@@ -76,12 +77,12 @@
               : sysTranslationsDict['sys.protocol']
           "
         >
-          <n-radio-group>
+          <n-radio-group v-model:value="formData.protocol_type">
             <n-radio-button
               v-for="item in cardTypeOption"
               :key="item"
-              v-model:value="formData.protocol_type"
               :label="item"
+              :value="item"
             >
               {{ sysTranslationsDict[item] || item }}
             </n-radio-button>
@@ -113,15 +114,15 @@
 
 <script setup lang="ts">
 import { ArrowBack } from '@vicons/ionicons5';
-import { ref, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import { getBanks, createUserBankCard } from '@/api/wallet.ts';
+import { createUserBankCard, getBanks } from '@/api/wallet.ts';
 import { bankTypeEnum } from '@/interface.ts';
 import { useCacheStore } from '@/store/cache';
 import { useUserStore } from '@/store/user';
 
-import type { FormRules, FormItemRule } from 'naive-ui';
+import type { FormItemRule, FormRules } from 'naive-ui';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -289,5 +290,11 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+</style>
+
+<style>
+.n-radio-group .n-radio-group__splitor {
+  vertical-align: top;
 }
 </style>
