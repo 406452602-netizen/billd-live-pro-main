@@ -35,7 +35,7 @@
         @click="goBack"
       >
         <n-icon>
-          <ArrowBack />
+          <ChevronBack />
         </n-icon>
       </n-button>
       <h1 class="page-title">
@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowBack } from '@vicons/ionicons5';
+import { ChevronBack } from '@vicons/ionicons5';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 

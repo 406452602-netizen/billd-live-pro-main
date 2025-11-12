@@ -6,7 +6,7 @@
         @click="router.go(-1)"
       >
         <n-icon>
-          <ArrowBackOutline />
+          <ChevronBackOutline />
         </n-icon>
       </n-button>
       <h2 class="page-title">投注历史</h2>
@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowBackOutline } from '@vicons/ionicons5';
+import { ChevronBackOutline } from '@vicons/ionicons5';
 import { onMounted, ref } from 'vue';
 
 import router from '@/router';

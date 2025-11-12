@@ -13,7 +13,7 @@
         "
       >
         <n-icon>
-          <ArrowBack />
+          <ChevronBack />
         </n-icon>
       </n-button>
       <h1 class="page-title">游戏余额</h1>
@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowBack, Refresh } from '@vicons/ionicons5';
+import { ChevronBack, Refresh } from '@vicons/ionicons5';
 import { onMounted, ref } from 'vue';
 
 import {

@@ -6,7 +6,7 @@
           :text="true"
           @click="goBack"
         >
-          <n-icon :component="ArrowBack" />
+          <n-icon :component="ChevronBack" />
         </n-button>
         <div>{{ sysTranslationsDict['wallet.bank'] }}</div>
         <div>&nbsp;</div>
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowBack } from '@vicons/ionicons5';
+import { ChevronBack } from '@vicons/ionicons5';
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 

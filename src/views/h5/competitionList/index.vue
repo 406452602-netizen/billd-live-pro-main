@@ -5,10 +5,11 @@
       <!-- 返回按钮 -->
       <n-button
         text
+        class="back-button"
         @click="goBack"
       >
         <n-icon>
-          <ArrowBack />
+          <ChevronBack />
         </n-icon>
       </n-button>
       <!-- 菜单 -->
@@ -16,6 +17,7 @@
         <!-- sys.today: 今日文本（中英文切换） -->
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.TODAY.id }"
+          class="menu-item"
           @click="changeTab(MATCH_LIST_TYPE.TODAY.id)"
         >
           {{ sysTranslationsDict['sys.today'] }}
@@ -24,6 +26,7 @@
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.ROLLING_BALL.id }"
           @click="changeTab(MATCH_LIST_TYPE.ROLLING_BALL.id)"
+          class="menu-item"
         >
           {{ sysTranslationsDict['sys.rolling.ball'] }}
         </button>
@@ -31,25 +34,10 @@
         <button
           :class="{ active: currentTab === MATCH_LIST_TYPE.MORNING_SESSION.id }"
           @click="changeTab(MATCH_LIST_TYPE.MORNING_SESSION.id)"
+          class="menu-item"
         >
           {{ sysTranslationsDict['sys.morning.session'] }}
         </button>
-      </div>
-      <!-- 剩余金额显示 -->
-      <div class="balance">
-        <span v-if="userStore.userInfo">
-          <img
-            src="@/assets/img/coin.png"
-            width="16"
-            height="16"
-            alt="余额"
-          />{{ userStore.userInfo.wallet?.balance }}</span
-        >
-        <span
-          v-else
-          @click="router.push({ name: routerName.h5Login })"
-          >登录
-        </span>
       </div>
     </div>
     <div class="divider"></div>
@@ -201,7 +189,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowBack, LockClosedOutline, Time } from '@vicons/ionicons5';
+import { ChevronBack, LockClosedOutline, Time } from '@vicons/ionicons5';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -370,30 +358,40 @@ onMounted(() => {
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  background: white;
+  height: 50px;
+  padding-top: env(safe-area-inset-top, 0);
+  position: relative;
+  text-align: center;
+}
+
+.back-button {
+  margin-right: 15px;
 }
 
 .menu {
   display: flex;
-  gap: 10px;
+  gap: 20px;
+  flex: 1;
 }
 
-.menu button {
-  padding: 5px 10px;
-  background-color: #f0f0f0;
+.menu-item {
+  padding: 5px 0;
+  background: transparent;
   border: none;
-  border-radius: 4px;
+  border-bottom: 2px solid transparent;
+  color: #333;
+  font-size: 16px;
   cursor: pointer;
+  position: relative;
 }
 
-.menu button.active {
-  background-color: #007bff;
-  color: white;
-}
-
-.balance {
-  font-weight: bold;
+.menu-item.active {
+  color: #4d20ae;
+  border-bottom-color: #4d20ae;
+  font-weight: 600;
 }
 
 .competition-list {

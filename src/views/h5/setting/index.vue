@@ -8,7 +8,7 @@
           text
           @click="() => router.go(-1)"
         >
-          <n-icon :component="ArrowBack" />
+          <n-icon :component="ChevronBack" />
         </n-button>
         <div>设置</div>
         <div>&nbsp;</div>
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowBack } from '@vicons/ionicons5';
+import { ChevronBack } from '@vicons/ionicons5';
 
 const userStore = useUserStore();
 import router, { mobileRouterName } from '@/router';

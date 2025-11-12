@@ -3,11 +3,14 @@
     <!-- 原有头部代码保持不变 -->
     <header class="card-header">
       <n-button
-        :text="true"
+        text
         class="back-button"
         @click="goBack"
       >
-        <n-icon :component="ArrowBack" />
+        <n-icon
+          :component="ChevronBack"
+          size="24"
+        />
       </n-button>
       <!-- wallet.withdraw: 提现文本（中英文切换） -->
       <div>{{ sysTranslationsDict['wallet.withdraw'] }}</div>
@@ -173,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowBack, Eye } from '@vicons/ionicons5';
+import { ChevronBack, Eye } from '@vicons/ionicons5';
 import { TabsProps, useMessage } from 'naive-ui';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -533,5 +536,21 @@ watch(
   padding: 20px 20px;
   background: #efeff1;
   flex: 1;
+}
+
+.back-button {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 10;
 }
 </style>

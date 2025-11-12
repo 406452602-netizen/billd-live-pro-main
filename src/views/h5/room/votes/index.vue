@@ -73,16 +73,16 @@
             v-if="![voteType.oddPurchase].includes(formData.votes_type)"
             label="投票金额"
           >
-                <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
+            <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
             <n-input-number
               v-model:value="formData.vote_amount"
               :min="reservePriceRef"
-                :placeholder="`${sysTranslationsDict['sys.placeholder.input']}`"
+              :placeholder="`${sysTranslationsDict['sys.placeholder.input']}`"
             />
           </n-form-item>
           <div v-else>
             <n-form-item label="输入倍率">
-                <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
+              <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
               <n-input-number
                 v-model:value="formData.odds"
                 :placeholder="`${sysTranslationsDict['sys.placeholder.input']}`"

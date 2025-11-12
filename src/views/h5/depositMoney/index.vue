@@ -8,8 +8,7 @@
         @click="goBack"
       >
         <n-icon
-          :component="ArrowBack"
-          style="color: white"
+          :component="ChevronBack"
           size="24"
         />
       </button>
@@ -32,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowBack } from '@vicons/ionicons5';
+import { ChevronBack } from '@vicons/ionicons5';
 // import { useMessage } from 'naive-ui';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
