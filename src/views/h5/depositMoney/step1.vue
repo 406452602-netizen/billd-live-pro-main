@@ -1,169 +1,206 @@
 <template>
-  <n-card>
-    <div class="form-group">
-      <!-- wallet.pay.method: 支付方式文本（中英文切换） -->
-      <label
-        class="label"
-        for="amount"
-        >{{ sysTranslationsDict['wallet.pay.method'] }}</label
+  <div class="deposit-form">
+    <!-- 支付方式选择 -->
+    <div class="form-section">
+      <label class="section-label">{{
+        sysTranslationsDict['wallet.pay.method']
+      }}</label>
+      <n-tabs
+        type="segment"
+        animated
+        :v-model:value="formData.bank_type"
+        :theme-overrides="tabsOverrides"
+        @update:value="changeBankType"
       >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <n-radio-group
-        v-model:value="formData.bank_type"
-        size="medium"
-        :on-update:value="changeBankType"
-      >
-        <n-radio-button
-          :key="bankTypeEnum.BANK"
-          :value="bankTypeEnum.BANK"
+        <!--快速转卡-->
+        <n-tab-pane
+          :name="bankTypeEnum.BANK"
+          :tab="sysTranslationsDict['wallet.rapid.card']"
         >
-          <!-- wallet.rapid.card: 快捷卡文本（中英文切换） -->
-          {{ sysTranslationsDict['wallet.rapid.card'] }}
-        </n-radio-button>
-        <n-radio-button
-          :key="bankTypeEnum.VIRTUAL"
-          :value="bankTypeEnum.VIRTUAL"
+          <div class="form-section">
+            <label class="section-label">
+              <!--              支付人姓名-->
+              {{ sysTranslationsDict['wallet.pay.name'] }}
+            </label>
+            <n-input
+              v-model:value="formData.username"
+              :placeholder="sysTranslationsDict['sys.placeholder.input']"
+              size="large"
+              class="custom-input"
+            />
+          </div>
+          <!-- 支付金额选择 -->
+          <div class="form-section">
+            <label class="section-label">
+              <!--支付金额-->
+              {{ sysTranslationsDict['wallet.pay.amount'] }}
+            </label>
+            <div class="amount-options">
+              <n-radio-group
+                v-model:value="choseValue"
+                size="medium"
+                class="grid-layout"
+              >
+                <n-radio
+                  v-for="amount in presetAmounts"
+                  :key="amount"
+                  :value="amount"
+                  class="amount-option"
+                  @click="selectAmount(amount)"
+                >
+                  {{ amount }}
+                </n-radio>
+                <n-radio
+                  :value="-1"
+                  class="amount-option custom-option"
+                  @click="handleCustomAmount"
+                >
+                  <!--自定义-->
+                  {{ sysTranslationsDict['sys.custom'] }}
+                </n-radio>
+              </n-radio-group>
+            </div>
+            <!-- 自定义金额输入 -->
+            <div
+              v-if="showCustomAmount"
+              class="form-section"
+            >
+              <n-input
+                id="amount"
+                v-model="formData.amount"
+                :allow-input="onlyAllowNumber"
+                :min="0.01"
+                :step="0.01"
+                :placeholder="sysTranslationsDict['sys.placeholder.input']"
+                size="large"
+                :on-update:value="validateCustomAmount"
+                class="custom-input"
+              />
+            </div>
+          </div>
+        </n-tab-pane>
+        <!--快速虚拟币-->
+        <n-tab-pane
+          :name="bankTypeEnum.VIRTUAL"
+          :tab="sysTranslationsDict['wallet.rapid.virtual']"
         >
-          <!-- wallet.rapid.virtual: 虚拟支付文本（中英文切换） -->
-          {{ sysTranslationsDict['wallet.rapid.virtual'] }}
-        </n-radio-button>
-      </n-radio-group>
-    </div>
-
-    <div
-      v-if="formData.bank_type === bankTypeEnum.BANK"
-      class="form-group"
-    >
-      <!-- wallet.pay.name: 支付名称文本（中英文切换） -->
-      <label
-        class="label"
-        for="amount"
-        >{{ sysTranslationsDict['wallet.pay.name'] }}</label
-      >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
-      <n-input
-        v-model:value="formData.username"
-        :min="0"
-        :placeholder="sysTranslationsDict['sys.placeholder.input']"
-      />
-    </div>
-
-    <div
-      v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
-      class="form-group"
-    >
-      <!-- wallet.virtual.currency: 虚拟货币文本（中英文切换） -->
-      <label
-        class="label"
-        for="amount"
-        >{{ sysTranslationsDict['wallet.virtual.currency'] }}</label
-      >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <n-radio-group
-        v-model:value="formData.bank_id"
-        size="medium"
-      >
-        <n-radio-button
-          v-for="virtualCard in virtualCards"
-          :key="virtualCard.id"
-          :value="virtualCard.id"
-          @click="selectVirtualCard(virtualCard)"
-        >
-          {{ virtualCard.bank_name }}
-        </n-radio-button>
-      </n-radio-group>
-    </div>
-
-    <div
-      v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
-      class="form-group"
-    >
-      <!-- wallet.virtual.currency: 虚拟货币文本, sys.protocol: 协议文本（中英文切换） -->
-      <label
-        class="label"
-        for="amount"
-        >{{
-          `${sysTranslationsDict['wallet.virtual.currency']}
+          <!-- 虚拟卡选择 -->
+          <div
+            v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
+            class="form-section"
+          >
+            <label class="section-label">{{
+              sysTranslationsDict['wallet.virtual.currency']
+            }}</label>
+            <n-radio-group
+              v-model:value="formData.bank_id"
+              size="medium"
+            >
+              <n-radio-button
+                v-for="virtualCard in virtualCards"
+                :key="virtualCard.id"
+                :value="virtualCard.id"
+                @click="selectVirtualCard(virtualCard)"
+              >
+                {{ virtualCard.bank_name }}
+              </n-radio-button>
+            </n-radio-group>
+          </div>
+          <!-- 协议类型选择 -->
+          <div
+            v-if="formData.bank_type === bankTypeEnum.VIRTUAL"
+            class="form-section"
+          >
+            <label class="section-label">
+              <!--              协议类型 -->
+              {{
+                `${sysTranslationsDict['wallet.virtual.currency']}
           ${sysTranslationsDict['sys.protocol']}`
-        }}</label
-      >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <n-radio-group
-        v-model:value="formData.protocol_type"
-        size="medium"
-      >
-        <n-radio-button
-          v-for="protocolType in protocolTypeList"
-          :key="protocolType"
-          :value="protocolType"
-        >
-          {{ protocolType }}
-        </n-radio-button>
-      </n-radio-group>
-    </div>
+              }}
+            </label>
+            <n-radio-group
+              v-model:value="formData.protocol_type"
+              size="medium"
+            >
+              <n-radio-button
+                v-for="protocolType in protocolTypeList"
+                :key="protocolType"
+                :value="protocolType"
+                class="protocol-tab"
+              >
+                {{ protocolType }}
+              </n-radio-button>
+            </n-radio-group>
+          </div>
+          <!-- 支付金额选择 -->
+          <div class="form-section">
+            <label class="section-label">
+              <!--支付金额-->
+              {{ sysTranslationsDict['wallet.pay.amount'] }}</label
+            >
+            <div class="amount-options">
+              <n-radio-group
+                v-model:value="choseValue"
+                size="medium"
+                class="grid-layout"
+              >
+                <n-radio
+                  v-for="amount in presetAmounts"
+                  :key="amount"
+                  :value="amount"
+                  class="amount-option"
+                  @click="selectAmount(amount)"
+                >
+                  {{ amount }}
+                </n-radio>
+                <n-radio
+                  :value="-1"
+                  class="amount-option custom-option"
+                  @click="handleCustomAmount"
+                >
+                  <!-- sys.custom: 自定义文本（中英文切换） -->
+                  {{ sysTranslationsDict['sys.custom'] }}
+                </n-radio>
+              </n-radio-group>
+            </div>
+          </div>
 
-    <div class="form-group">
-      <!-- wallet.pay.amount: 支付金额文本（中英文切换） -->
-      <label
-        class="label"
-        for="amount"
-        >{{ sysTranslationsDict['wallet.pay.amount'] }}</label
+          <!-- 自定义金额输入 -->
+          <div
+            v-if="showCustomAmount"
+            class="form-section"
+          >
+            <n-input
+              id="amount"
+              v-model="formData.amount"
+              :allow-input="onlyAllowNumber"
+              :min="0.01"
+              :step="0.01"
+              :placeholder="sysTranslationsDict['sys.placeholder.input']"
+              size="large"
+              :on-update:value="validateCustomAmount"
+              class="custom-input"
+            />
+          </div>
+        </n-tab-pane>
+      </n-tabs>
+
+      <!-- 存款按钮 -->
+      <n-button
+        type="primary"
+        class="deposit-button"
+        :disabled="isFormValid"
+        block
+        @click="submit"
       >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <n-radio-group
-        v-model:value="choseValue"
-        size="medium"
-        class="radio-group-wrap"
-        style="width: 100%"
-      >
-        <n-radio
-          v-for="amount in presetAmounts"
-          :key="amount"
-          :value="amount"
-          @click="selectAmount(amount)"
-        >
-          {{ amount }}
-        </n-radio>
-        <n-radio
-          :value="-1"
-          @click="handleCustomAmount"
-        >
-          <!-- sys.custom: 自定义文本（中英文切换） -->
-          {{ sysTranslationsDict['sys.custom'] }}
-        </n-radio>
-      </n-radio-group>
+        {{ sysTranslationsDict['sys.deposit.money'] }}
+      </n-button>
     </div>
-    <div
-      v-if="showCustomAmount"
-      class="form-group"
-    >
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
-      <n-input-number
-        id="amount"
-        v-model="formData.amount"
-        :min="0.01"
-        :step="0.01"
-        :placeholder="`${sysTranslationsDict['sys.placeholder.input']}`"
-        :on-update:value="validateCustomAmount"
-      />
-    </div>
-    <n-button
-      type="primary"
-      class="submit-button"
-      :disabled="isFormValid"
-      block
-      @click="submit"
-    >
-      <!-- sys.deposit.money: 存款文本（中英文切换） -->
-      {{ sysTranslationsDict['sys.deposit.money'] }}
-    </n-button>
-  </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useMessage } from 'naive-ui';
+import { TabsProps, useMessage } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 
 import { createRechargeRecord, getBanks } from '@/api/wallet.ts';
@@ -190,6 +227,21 @@ const sysTranslationsDict = computed(() => {
   return useCacheStore().sysTranslationsDict;
 });
 
+type TabsThemeOverrides = NonNullable<TabsProps['themeOverrides']>;
+const tabsOverrides: TabsThemeOverrides = {
+  tabTextColorActiveSegment: '#fff',
+  colorSegment: '#fff',
+  barColor: '#4d20ae',
+  tabTextColorHoverSegment: '#fff',
+  tabBorderColor: '#4d20ae',
+  tabTextColorSegment: '#4d20ae',
+  tabColorSegment: '#4d20ae',
+  tabColor: '#666666',
+  tabTextColorBar: '#4d20ae',
+};
+
+const onlyAllowNumber = (value: string) => !value || /^\d+$/.test(value);
+
 // 计算属性，用于检查表单是否有效
 const isFormValid = computed(() => {
   // 检查银行类型是否选择
@@ -209,6 +261,7 @@ const isFormValid = computed(() => {
       return true;
     }
   }
+  console.log('isFormValid', formData.value);
 
   // 银行支付模式需要检查用户名
   if (formData.value.bank_type === bankTypeEnum.BANK) {
@@ -245,6 +298,7 @@ function selectVirtualCard(virtualCard: any) {
 }
 
 function selectAmount(amountValue: number) {
+  console.log('selectAmount', amountValue);
   formData.value.amount = amountValue;
   showCustomAmount.value = false;
 }
@@ -300,18 +354,163 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
-.form-group {
-  margin-bottom: 15px;
+<style lang="scss">
+.deposit-form {
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.label {
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
 }
 
-.radio-group-wrap {
-  flex-wrap: wrap; /* 设置选项换行 */
+.payment-type-tabs {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.payment-tab {
+  flex: 1;
+  height: 40px;
+  font-size: 15px;
+  border-color: #e8e8e8;
+}
+
+.payment-tab.n-radio-button--active {
+  background-color: #7a57d1 !important;
+  color: white !important;
+  border-color: #7a57d1 !important;
+}
+
+.payment-tab.n-radio-button--active::after {
+  box-shadow: none !important;
+}
+
+.custom-input {
+  height: 50px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+}
+
+.custom-input:focus {
+  border-color: #7a57d1;
+  box-shadow: 0 0 0 2px rgba(122, 87, 209, 0.1);
+}
+
+.grid-layout {
+  //display: grid;
+  //grid-template-columns: repeat(3, 1fr);
+}
+
+//.amount-option {
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+//}
+
+//.amount-option .n-radio {
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+//}
+//
+//.amount-option .n-radio__border {
+//  width: 20px;
+//  height: 20px;
+//  border: 2px solid #d9d9d9;
+//  transition: all 0.3s;
+//  flex-shrink: 0;
+//}
+//
+//.amount-option .n-radio__border::after {
+//  width: 10px;
+//  height: 10px;
+//}
+//
+//.amount-option.n-radio--checked .n-radio__border {
+//  border-color: #7a57d1 !important;
+//  background-color: #7a57d1 !important;
+//}
+//
+//.amount-option .n-radio__label {
+//  font-size: 16px;
+//  padding-left: 8px;
+//  margin-right: auto;
+//  white-space: nowrap;
+//}
+
+.deposit-button {
+  width: 100%;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 25px;
+  color: white;
+  margin-top: 30px;
+  transition: all 0.3s;
+}
+
+// 适配移动设备
+@media (max-width: 480px) {
+  .deposit-form {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+  }
+
+  .section-label {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .grid-layout {
+    gap: 10px;
+  }
+
+  .amount-option .n-radio__label {
+    font-size: 15px;
+  }
+
+  .payment-tab {
+    font-size: 14px;
+  }
+
+  .custom-input {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .deposit-button {
+    height: 46px;
+    font-size: 17px;
+    margin-top: 25px;
+  }
+}
+
+.tab-pane-background {
+  background: white;
+}
+
+.n-tabs .n-tabs-rail {
+  padding: 0;
+  border: 1px solid #4d20ae;
 }
 </style>

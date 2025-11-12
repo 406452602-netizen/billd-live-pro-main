@@ -50,186 +50,145 @@
     <!--      }"-->
     <!--      @click="openToTarget(currentSwiper.url)"-->
     <!--    ></div>-->
-    <n-carousel
-      direction="horizontal"
-      autoplay
-      dot-type="line"
-      dot-placement="bottom"
-      style="height: 240px"
-    >
-      <img
-        v-for="(item, index) in adList"
-        class="carousel-img"
-        :src="AXIOS_BASEURL + item.ad_image"
-        :key="index"
-        @click="goUrl(item)"
-      />
-    </n-carousel>
-    <div class="user-info">
-      <div class="info">
-        <div
-          v-if="userStore.userInfo"
-          class="user"
-        >
-          <!--          <Avatar-->
-          <!--            :url="userStore.userInfo.avatar"-->
-          <!--            :name="userStore.userInfo.username"-->
-          <!--            :size="30"-->
-          <!--          ></Avatar>-->
-          <div style="flex: 1; color: #8e8b8b">
-            {{ userStore.userInfo.username }}
+    <div style="padding: 0 15px; margin-bottom: 15px">
+      <n-carousel
+        direction="horizontal"
+        autoplay
+        dot-type="line"
+        dot-placement="bottom"
+        style="
+          height: 180px;
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <img
+          v-for="(item, index) in adList"
+          :key="index"
+          class="carousel-img"
+          :src="AXIOS_BASEURL + item.ad_image"
+          @click="goUrl(item)"
+        />
+      </n-carousel>
+    </div>
+
+    <!-- 用户信息卡片 -->
+    <div class="user-info-card">
+      <div class="user-info-container">
+        <!-- 左侧：用户名和钱包 -->
+        <div class="user-left-section">
+          <div
+            class="user-name"
+            @click="handleLoginClick"
+          >
+            <span class="user-name-label"></span>
+            {{
+              userStore.userInfo
+                ? userStore.userInfo.username
+                : sysTranslationsDict['sys.login']
+            }}
+          </div>
+          <div
+            v-if="userStore.userInfo"
+            class="user-balance"
+          >
+            <img
+              src="@/assets/img/coin.png"
+              alt="余额图标"
+            />
+            <span>{{ userStore.userInfo.wallet?.balance || '0.00' }}</span>
           </div>
         </div>
-        <!--        <div-->
-        <!--          v-else-->
-        <!--          class="btn"-->
-        <!--          @click="appStore.showLoginModal = true"-->
-        <!--        >-->
-        <!--          {{ sysTranslationsDict['sys.login'] }}-->
-        <!--        </div>-->
-        <div
-          v-else
-          class="btn"
-          @click="router.push({ name: mobileRouterName.h5Login })"
-        >
-          <!-- sys.login: 登录文本（中英文切换） -->
-          <n-flex vertical>
-            <!-- sys.have.not: 未提示文本, sys.login: 登录文本（中英文切换） -->
-            <div>
-              {{
-                `${sysTranslationsDict['sys.have.not']} ${sysTranslationsDict['sys.login']}`
-              }}
+
+        <!-- 右侧：快捷操作按钮 -->
+        <div class="user-right-section">
+          <div
+            class="action-btn"
+            @click="jumpPage(mobileRouterName.h5DepositMoney)"
+          >
+            <div class="action-icon">
+              <img
+                src="@/assets/img/home/depositMoney.png"
+                class="user-menu"
+                alt="depositMoney"
+              />
             </div>
-            <!-- sys.login: 登录文本, sys.register: 注册文本, sys.view: 查看文本（中英文切换） -->
-            <div style="color: #8e8b8b; font-size: 12px">
-              {{
-                `${sysTranslationsDict['sys.login']}/${sysTranslationsDict['sys.register']}
-                ${sysTranslationsDict['sys.view']}`
-              }}
+            <div class="action-text">
+              <!-- 存款 -->
+              {{ sysTranslationsDict['sys.deposit.money'] }}
             </div>
-          </n-flex>
-        </div>
-        <div
-          v-if="userStore.userInfo"
-          class="waller"
-        >
-          <img
-            src="@/assets/img/coin.png"
-            width="20"
-            height="20"
-          />
-          <span>{{ userStore.userInfo.wallet?.balance }}</span>
+          </div>
+          <div
+            class="action-btn"
+            @click="jumpPage(mobileRouterName.h5WithdrawMoney)"
+          >
+            <div class="action-icon">
+              <img
+                src="@/assets/img/home/withdrawMoney.png"
+                class="user-menu"
+                alt="withdrawMoney"
+              />
+            </div>
+            <div class="action-text">
+              <!-- 取款 -->
+              {{ sysTranslationsDict['sys.withdraw.money'] }}
+            </div>
+          </div>
+          <div
+            class="action-btn"
+            @click="jumpPage(mobileRouterName.h5GameBalance)"
+          >
+            <div class="action-icon">
+              <img
+                src="@/assets/img/home/convert.png"
+                class="user-menu"
+                alt="convert"
+              />
+            </div>
+            <div class="action-text">
+              <!-- 转换 -->
+              {{ sysTranslationsDict['sys.convert'] }}
+            </div>
+          </div>
         </div>
       </div>
-      <n-flex
-        justify="space-around"
-        :size="[6, 12]"
-        align="center"
-      >
-        <div
-          class="menu"
-          @click="jumpPage(mobileRouterName.h5DepositMoney)"
-        >
-          <div class="menu-img">
-            <img
-              src="@/assets/img/home/cunkuan.png"
-              width="40"
-              height="40"
-            />
-          </div>
-          <!-- sys.deposit.money: 存款文本（中英文切换） -->
-          <div class="menu-title">
-            {{ sysTranslationsDict['sys.deposit.money'] }}
-          </div>
-        </div>
-
-        <div
-          class="menu"
-          @click="jumpPage(mobileRouterName.h5WithdrawMoney)"
-        >
-          <div class="menu-img">
-            <img
-              src="@/assets/img/home/qukuan.png"
-              width="40"
-              height="40"
-            />
-          </div>
-          <!-- sys.withdraw.money: 提款文本（中英文切换） -->
-          <div class="menu-title">
-            {{ sysTranslationsDict['sys.withdraw.money'] }}
-          </div>
-        </div>
-
-        <div
-          class="menu"
-          @click="jumpPage(mobileRouterName.h5GameBalance)"
-        >
-          <div class="menu-img">
-            <img
-              src="@/assets/img/home/vip.png"
-              width="40"
-              height="40"
-            />
-          </div>
-          <!-- sys.convert: 转换文本（中英文切换） -->
-          <div class="menu-title">
-            {{ sysTranslationsDict['sys.convert'] }}
-          </div>
-        </div>
-        <div class="menu">
-          <div class="menu-img">
-            <img
-              src="@/assets/img/home/download.png"
-              width="40"
-              height="40"
-            />
-          </div>
-          <!-- sys.promotion: 推广文本（中英文切换） -->
-          <div class="menu-title">
-            {{ sysTranslationsDict['sys.promotion'] }}
-          </div>
-        </div>
-      </n-flex>
     </div>
+    <!--本地竞猜界面-->
     <router-link :to="{ name: mobileRouterName.h5CompetitionList }">
       <img
-        src="@/assets/img/demo_123.png"
-        style="width: 90vw; margin: auto 5vw auto 5vw"
+        src="@/assets/img/mask_group.png"
+        style="width: 90vw; margin: auto 5vw auto 5vw; border-radius: 8px"
       />
     </router-link>
+    <!-- 移除了多余的图片引用，避免影响布局 -->
     <!-- 游戏列表展示区域 -->
-    <div
-      class="game-list-section"
-      style="margin: 20px 0 30px"
-    >
-      <div
-        class="section-title"
-        style="padding: 0 5vw; margin-bottom: 15px"
-      >
+    <div class="game-list-section">
+      <div class="game-list-title">
         <!-- sys.game.list: 游戏列表文本（中英文切换） -->
-        <h3 style="margin: 0; font-size: 18px; color: #333">
+        <h3>
+          <span class="title-decoration"></span>
           {{ sysTranslationsDict['sys.game.list'] }}
         </h3>
       </div>
 
       <div
         v-if="loadingGames"
-        style="text-align: center; padding: 40px"
+        class="empty-state"
       >
-        <div style="color: #999">加载中...</div>
+        <div>加载中...</div>
       </div>
 
       <div
         v-else-if="gameList.length === 0"
-        style="text-align: center; padding: 40px"
+        class="empty-state"
       >
-        <div style="color: #999">暂无游戏数据</div>
+        <div>暂无游戏数据</div>
       </div>
 
       <div
         v-else
         class="game-grid"
-        style="padding: 0 5vw"
       >
         <div
           v-for="game in gameList"
@@ -240,151 +199,27 @@
               ? jumpIntegrationGame(game.gameId || game.game_id)
               : jumpGame(game.gameId || game.game_id)
           "
-          style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            margin: 10px;
-            border-radius: 8px;
-            background-color: #f5f5f5;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: calc(25% - 20px);
-            float: left;
-          "
-          :style="{
-            backgroundColor:
-              gameList.indexOf(game) % 4 === 0
-                ? '#e6f7ff'
-                : gameList.indexOf(game) % 4 === 1
-                  ? '#fff7e6'
-                  : gameList.indexOf(game) % 4 === 2
-                    ? '#f6ffed'
-                    : '#fff0f6',
-          }"
         >
-          <div
-            class="game-logo"
-            style="margin-bottom: 8px"
-          >
+          <div class="game-logo">
             <img
               v-if="game.icon"
               :src="game.icon"
-              style="
-                width: 60px;
-                height: 60px;
-                object-fit: contain;
-                border-radius: 4px;
-              "
+              :alt="game.game_name"
+              class="game-icon-img"
             />
             <div
               v-else
-              style="
-                width: 60px;
-                height: 60px;
-                background-color: #ddd;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-              "
+              class="game-icon-placeholder"
             >
               {{ game.game_name?.charAt(0) || '游' }}
             </div>
           </div>
-          <div
-            class="game-name"
-            style="
-              font-size: 14px;
-              text-align: center;
-              color: #333;
-              word-break: break-all;
-            "
-          >
+          <div class="game-name">
             {{ game.game_name }}
           </div>
         </div>
-        <div style="clear: both"></div>
       </div>
     </div>
-
-    <!--    &lt;!&ndash; 旧的游戏入口（暂时保留以便过渡） &ndash;&gt;-->
-    <!--    <img-->
-    <!--      src="@/assets/img/demo_123.png"-->
-    <!--      style="width: 90vw; margin: auto 5vw auto 5vw"-->
-    <!--      @click="-->
-    <!--        gameList.length > 0-->
-    <!--          ? jumpGame(gameList[0].gameId || gameList[0].game_id)-->
-    <!--          : ''-->
-    <!--      "-->
-    <!--      v-if="!loadingGames && gameList.length > 0"-->
-    <!--    />-->
-    <!--    <div class="type-list">-->
-    <!--      <div-->
-    <!--        v-for="(item, index) in liveRoomList"-->
-    <!--        :key="index"-->
-    <!--        class="item"-->
-    <!--      >-->
-    <!--        <div-->
-    <!--          class="title"-->
-    <!--          @click.stop-->
-    <!--        >-->
-    <!--          <div class="left">{{ item.name }}</div>-->
-    <!--          <div-->
-    <!--            class="right"-->
-    <!--            @click="showAll(item)"-->
-    <!--          >-->
-    <!--            {{ sysTranslationsDict['home.view.more'] }}-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--        <div class="live-room-list">-->
-    <!--          <template-->
-    <!--            v-for="iten in item.live_rooms"-->
-    <!--            :key="iten.id"-->
-    <!--          >-->
-    <!--            <MobileLiveRoomItem-->
-    <!--              :liveroom="iten"-->
-    <!--              :user="iten?.user"-->
-    <!--              @click="goRoom(iten)"-->
-    <!--            ></MobileLiveRoomItem>-->
-    <!--          </template>-->
-    <!--          <div-->
-    <!--            v-if="!item.live_rooms?.length"-->
-    <!--            class="null"-->
-    <!--          >-->
-    <!--            {{ sysTranslationsDict['sys.no.data'] }}-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <div class="item">-->
-    <!--        <div-->
-    <!--          class="title"-->
-    <!--          @click.stop-->
-    <!--        >-->
-    <!--          <div class="left">b站直播</div>-->
-    <!--          <div-->
-    <!--            class="right"-->
-    <!--            @click="showAllBilibili()"-->
-    <!--          >-->
-    <!--            {{ sysTranslationsDict['home.view.more'] }}-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--        <div class="live-room-list">-->
-    <!--          <template-->
-    <!--            v-for="item in bilibiliLiveRoomList"-->
-    <!--            :key="item.id"-->
-    <!--          >-->
-    <!--            <MobileLiveRoomItem-->
-    <!--              :liveroom="{ ...item.live_room, live: {} }"-->
-    <!--              :user="item.live_room?.users?.[0]"-->
-    <!--              @click="goRoom(item, true)"-->
-    <!--            ></MobileLiveRoomItem>-->
-    <!--          </template>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -396,16 +231,8 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 // import { fetchAreaLiveRoomList } from '@/api/area';
 // import { fetchLiveBilibiliGetUserRecommend } from '@/api/bilibili';
 import { adCarouselList } from '@/api/ad.ts';
-// eslint-disable-next-line import/order
 import { getGameBetLobby, getGamesNames } from '@/api/game.ts';
-// eslint-disable-next-line import/order
 import { fetchUserKeepAlive } from '@/api/user';
-
-// import {
-//   IArea,
-//   // ILive,
-//   // SwitchEnum
-// } from '@/interface';
 import HeadCpt from '@/layout/mobile/head/index.vue';
 import router, { mobileRouterName } from '@/router';
 import { AXIOS_BASEURL } from '@/spec-config';
@@ -416,7 +243,11 @@ import { useUserStore } from '@/store/user';
 //   ILiveRoom,
 //   // LiveRoomStatusEnum,
 // } from '@/types/ILiveRoom';
-
+// import {
+//   IArea,
+//   // ILive,
+//   // SwitchEnum
+// } from '@/interface';
 const sysTranslationsDict = computed(() => {
   return useCacheStore().sysTranslationsDict;
 });
@@ -613,6 +444,15 @@ function goUrl(item) {
   }
 }
 
+function handleLoginClick() {
+  if (!userStore.userInfo) {
+    // 游客状态下点击显示登录弹窗
+    router.push({
+      name: mobileRouterName.h5Login,
+    });
+  }
+}
+
 // 页面失焦时暂停心跳检测
 const handlePageBlur = () => {
   // 用户离开页面时不停止心跳检测，保持活跃
@@ -722,236 +562,235 @@ function getAdList() {
 </script>
 
 <style lang="scss" scoped>
-.h5-wrap {
-  //background-color: #f4f4f4;
-
-  background: white;
-
-  .logo-bar {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 0 20px;
-    height: 40px;
-    border-bottom: 1px solid #e7e7e7;
-    background-color: white;
-
-    .logo {
-      width: 90px;
-      height: 36px;
-
-      @include setBackground('@/assets/img/logo-txt.png');
-    }
-  }
-
-  .nav-list {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    background-color: white;
-    line-height: 40px;
-
-    .item {
-      position: relative;
-      margin: 0 20px;
-
-      &.active {
-        &::after {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 4px;
-          background-color: $theme-color-gold;
-          content: '';
-        }
-      }
-    }
-  }
-
-  .swiper {
-    width: 100vw;
-    height: calc(100vw / $video-ratio);
-    background-color: #f4f4f4;
-    @extend %coverBg;
-  }
-
-  .type-list {
-    .item {
-      margin: 15px 0;
-      padding: 15px;
-      background-color: white;
-
-      .title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-
-        .right {
-          color: #999;
-          font-size: 14px;
-        }
-      }
-
-      .live-room-list {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        .live-room {
-          display: inline-block;
-          margin-bottom: 10px;
-          width: 48%;
-          height: 130px;
-
-          .cover {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 100px;
-            border-radius: 8px;
-
-            @extend %coverBg;
-
-            .living-ico {
-              position: absolute;
-              top: 0px;
-              left: 0px;
-              z-index: 10;
-              padding: 0 10px;
-              height: 20px;
-              border-radius: 8px 0 10px;
-              background-color: $theme-color-gold;
-              color: white;
-              text-align: center;
-              font-size: 12px;
-              line-height: 20px;
-            }
-
-            .cdn-ico {
-              position: absolute;
-              top: -12px;
-              right: -12px;
-              z-index: 2;
-              width: 70px;
-              height: 22px;
-              background-color: #f87c48;
-              transform: rotate(45deg);
-              transform-origin: bottom;
-
-              .txt {
-                margin-left: 18px;
-                background-image: initial !important;
-                color: white;
-                font-size: 10px;
-                transform: scale(0.83333) translate(2px, 3px);
-              }
-            }
-
-            .txt {
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              box-sizing: border-box;
-              padding: 4px 8px;
-              width: 100%;
-              border-radius: 0 0 4px 4px;
-              background-image: linear-gradient(
-                180deg,
-                rgba(0, 0, 0, 0) 0,
-                rgba(0, 0, 0, 0.32) 100%
-              );
-              color: white;
-              text-align: initial;
-              font-size: 13px;
-
-              @extend %singleEllipsis;
-            }
-          }
-
-          .desc {
-            margin-top: 4px;
-            font-size: 14px;
-
-            @extend %singleEllipsis;
-          }
-        }
-      }
-    }
-  }
+.user-menu {
+  height: 36px;
+  width: 36px;
 }
 
-.user-info {
+.h5-wrap {
+  background: linear-gradient(to bottom, #eee7f7 0%, #ffffff 100%);
+  min-height: 100vh;
+  padding-bottom: 70px; // 为底部导航栏留出空间
+  padding-top: 0;
+}
+
+/* 用户信息卡片样式 */
+.user-info-card {
+  padding: 15px;
+  margin: 0 15px 15px;
+  border-radius: 12px;
+  //box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.user-info-container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  justify-content: space-between;
-  //padding: 5px;
-  > div {
-    border-radius: 5px;
-    height: 65px;
-  }
-
-  > div:first-child {
-    //background-color: #eaf4fe;
-    padding: 1vh 0 1vh 5vw;
-  }
-
-  > div:last-child {
-    border-radius: 5px;
-    //background-color: #eaf4fe;
-    padding: 1vh 5vw 1vh 0;
-    height: 65px;
-  }
-
-  .info {
-    > .user {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      justify-content: center;
-    }
-
-    > .waller {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-  }
 }
 
-.menu {
-  width: 12vw;
-  height: 10vh;
+/* 左侧部分：用户名和钱包 */
+.user-left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.menu-title {
-  font-size: 10px;
+.user-name {
+  display: flex;
   align-items: center;
+  font-weight: 600;
+  color: #7a57d1;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.user-name-label {
+  background: #7a57d1;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.user-balance {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  color: #ff6b6b;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.user-balance img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.user-balance span {
+  font-weight: bold;
+  margin-left: 4px;
+  color: #ff6b6b;
+}
+
+/* 右侧部分：快捷操作按钮 */
+.user-right-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.action-text {
+  font-size: 12px;
+  color: #000;
+  font-weight: 600;
+}
+
+/* 标题样式 - 紫色 */
+.game-list-title {
+  padding: 0 15px;
+  margin-bottom: 15px;
+  margin-top: 20px;
+}
+
+.game-list-title h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #7a57d1; /* 紫色标题 */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.title-decoration {
+  background: #7a57d1;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+/* 空状态样式 */
+.empty-state {
   text-align: center;
+  padding: 40px;
+  color: #999;
 }
 
-.carousel-img {
-  height: 240px;
-  width: 100vw;
+/* 游戏网格布局 - 统一样式 */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 0 15px;
+  margin-bottom: 20px;
+}
+
+.game-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.game-item:active {
+  transform: scale(0.95);
+}
+
+.game-logo {
+  margin-bottom: 8px;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+/* 游戏图标样式 */
+.game-icon-img {
+  width: 80px;
+  height: 80px;
   object-fit: contain;
+  aspect-ratio: 1;
+  transition: transform 0.2s ease;
+}
+
+.game-item:active .game-icon-img {
+  transform: scale(0.98);
+}
+
+.game-name {
+  font-size: 14px;
+  text-align: center;
+  color: #333;
+  margin-top: 10px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  font-weight: 500;
+}
+
+.game-icon-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 游戏列表区域样式 */
+.game-list-section {
+  margin: 0 0 30px;
+}
+
+/* 轮播图样式 */
+.carousel-img {
+  height: 180px;
+  width: 100%;
   display: block;
   margin: 0 auto;
+  object-fit: cover;
 }
 
-.menu-img {
-  // 添加居中对齐样式
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  // 可根据需要添加固定尺寸
-  width: 100%;
-}
+/* 游戏网格布局 - 与设计图一致 */
+/* 已在上方统一定义游戏网格样式 */
 
 // 游戏加载层样式
 .game-loading-overlay {

@@ -368,7 +368,7 @@ function goBack() {
 }
 
 .active .step-circle {
-  background-color: #1890ff;
+  background-color: #4d20ae;
 }
 
 .step-line {
@@ -385,7 +385,7 @@ function goBack() {
 }
 
 .active .step-line {
-  background-color: #1890ff;
+  background-color: #4d20ae;
 }
 
 .step-text {
@@ -396,6 +396,6 @@ function goBack() {
 }
 
 .active .step-text {
-  color: #1890ff;
+  color: #4d20ae;
 }
 </style>

@@ -27,7 +27,7 @@ import { fetchAreaGetAllArea } from '@/api/area';
 import { fetchGlobalMsgGlobal } from '@/api/globalMsg';
 import NaiveMessage from '@/components/NaiveMessage/index.vue';
 import NaiveModal from '@/components/NaiveModal/index.vue';
-import { THEME_COLOR, appBuildInfo } from '@/constant';
+import { THEME_COLOR, appBuildInfo, THEME_BORDER_RADIUS } from '@/constant';
 import { useGoogleAd } from '@/hooks/use-google-ad';
 import { loginMessage } from '@/hooks/use-login';
 import { useAppStore } from '@/store/app';
@@ -48,6 +48,14 @@ const themeOverrides: GlobalThemeOverrides = {
   common: {
     primaryColor: THEME_COLOR,
     primaryColorHover: THEME_COLOR,
+    borderRadius: THEME_BORDER_RADIUS,
+  },
+  Table: {
+    borderRadius: '12px',
+    borderColor: '#CCCCCC',
+    thBackgroundColor: 'transparent',
+    thBackgroundHoverColor: 'transparent',
+    thBackgroundSupplementaryColor: 'transparent',
   },
 };
 

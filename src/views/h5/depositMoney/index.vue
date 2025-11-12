@@ -1,19 +1,24 @@
 <template>
-  <div class="bank-card-list-container">
-    <div class="title">
-      <div class="card-header">
-        <n-button
-          :text="true"
-          @click="goBack"
-        >
-          <n-icon :component="ArrowBack" />
-        </n-button>
-        <!-- sys.deposit.money: 存款文本（中英文切换） -->
-        <div>{{ sysTranslationsDict['sys.deposit.money'] }}</div>
-        <div>&nbsp;</div>
-      </div>
-    </div>
-    <div class="content">
+  <div class="deposit-container">
+    <!-- 页面头部 -->
+    <header class="header">
+      <button
+        class="back-button"
+        type="button"
+        @click="goBack"
+      >
+        <n-icon
+          :component="ArrowBack"
+          style="color: white"
+          size="24"
+        />
+      </button>
+      <!-- sys.deposit.money: 存款文本（中英文切换） -->
+      <h1 class="page-title">{{ sysTranslationsDict['sys.deposit.money'] }}</h1>
+      <div class="header-placeholder"></div>
+    </header>
+    <!-- 页面内容 -->
+    <main class="content">
       <step1 @next="stepNext" />
       <!--      <step2-->
       <!--        v-else-if="current === 1"-->
@@ -22,7 +27,7 @@
       <!--        :model-value="rechargeRecord"-->
       <!--      />-->
       <!--      <step3 v-else-if="current == 2" />-->
-    </div>
+    </main>
   </div>
 </template>
 
@@ -166,117 +171,79 @@ function goBack() {
 </script>
 
 <style scoped lang="scss">
-.bank-card-list-container {
-  max-width: 800px;
-  margin: 0 auto;
-  height: 90vh;
-  overflow-y: scroll;
-  background: #f4f9fd;
+.deposit-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 30px;
 }
 
-.title {
-  background: #fff;
-  padding: 20px;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  height: 50px;
+  padding-top: env(safe-area-inset-top, 0);
+  position: relative;
+  text-align: center;
+}
+
+.back-button {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 10;
+}
+
+.back-button:active {
+  opacity: 0.7;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.header-placeholder {
+  width: 40px;
+  position: absolute;
+  right: 16px;
 }
 
 .content {
   padding: 20px;
-}
-
-.bank-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.bank-card {
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #f0f2f5;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e6e8eb;
-  }
-}
-
-.bank-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.card-number {
-  font-size: 16px;
-  color: #666;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-// 步骤条
-.mobile-steps {
-  display: flex;
-  align-items: center;
-  margin: 20px 0;
-  padding: 0 10px;
-}
-
-.mobile-step {
+  background: #efeff1;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
 }
 
-.step-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 14px;
-  z-index: 1;
-}
+// 适配移动设备
+@media (max-width: 480px) {
+  .deposit-container {
+    padding-bottom: 25px;
+  }
 
-.active .step-circle {
-  background-color: #1890ff;
-}
+  .header {
+    height: 80px;
+  }
 
-.step-line {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  width: 100%;
-  height: 2px;
-  background-color: #e0e0e0;
-}
+  .content {
+    padding: 16px;
+  }
 
-.active ~ .mobile-step .step-line {
-  background-color: #e0e0e0;
-}
-
-.active .step-line {
-  background-color: #1890ff;
-}
-
-.step-text {
-  margin-top: 8px;
-  font-size: 12px;
-  text-align: center;
-  color: #666;
-}
-
-.active .step-text {
-  color: #1890ff;
+  .page-title {
+    font-size: 17px;
+  }
 }
 </style>

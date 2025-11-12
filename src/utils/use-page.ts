@@ -1,5 +1,9 @@
 import { PaginationProps } from 'naive-ui';
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
+
+const cacheStore = useCacheStore();
+const sysTranslationsDict = computed(() => cacheStore.sysTranslationsDict);
+import { useCacheStore } from '@/store/cache';
 // import { useI18n } from 'vue-i18n';
 
 export const usePage = () => {
@@ -18,7 +22,9 @@ export const usePage = () => {
       paginationReactive.page = page;
     },
     prefix: ({ itemCount }) => {
-      return `一共${itemCount}条数据`;
+      const template = sysTranslationsDict.value['sys.table.count'];
+
+      return template.replace('{itemCount}', itemCount);
       // return `一共${itemCount}条数据`;
     },
   });

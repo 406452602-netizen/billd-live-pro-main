@@ -5,8 +5,8 @@
       align="center"
       vertical
     >
-      <div>{{ data.amount }}</div>
-      <div>
+      <div class="money-text">{{ data.amount }}</div>
+      <div class="pay-countdown">
         {{
           translateWithVars('deposit.money.payTip', {
             time: formatTime(remainingTime),
@@ -458,5 +458,18 @@ const submitVoucher = async () => {
   .submit-button {
     margin-top: 10px;
   }
+}
+
+.money-text {
+  color: #ff0000;
+  font-size: 26px;
+}
+
+.pay-countdown {
+  font-size: 14px;
+  color: #4d21ae;
+  background: #f4efff;
+  padding: 5px 10px;
+  border-radius: 15px;
 }
 </style>

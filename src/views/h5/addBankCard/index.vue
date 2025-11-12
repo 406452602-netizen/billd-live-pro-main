@@ -77,7 +77,11 @@
               : sysTranslationsDict['sys.protocol']
           "
         >
-          <n-radio-group v-model:value="formData.protocol_type">
+          <n-radio-group
+            v-model:value="formData.protocol_type"
+            :theme-overrides="radioButtonOverrides"
+            class="card-type-radio-group"
+          >
             <n-radio-button
               v-for="item in cardTypeOption"
               :key="item"
@@ -210,6 +214,17 @@ const formData = ref<any>({
   protocol_type: null,
 });
 
+// 单选按钮主题配置
+const radioButtonOverrides = {
+  buttonTextColorActive: '#fff',
+  buttonColorActive: '#722ed1',
+  buttonTextColor: '#722ed1',
+  buttonColor: '#fff',
+  buttonBoxShadowHover: 'inset 0 0 0 1px #722ed1',
+  buttonBorderColor: '#722ed1',
+  buttonBorderColorActive: '#722ed1',
+};
+
 onMounted(async () => {
   bankType.value = Number(route.query.bankType);
   await fetchBanks();
@@ -296,5 +311,33 @@ label {
 <style>
 .n-radio-group .n-radio-group__splitor {
   vertical-align: top;
+  display: none;
+}
+
+.n-radio-button {
+  border-radius: 0 !important;
+}
+
+.n-radio-button:first-child {
+  border-top-left-radius: 4px !important;
+  border-bottom-left-radius: 4px !important;
+}
+
+.n-radio-button:last-child {
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+.n-radio-button:not(:last-child) {
+  margin-right: 0 !important;
+}
+
+.card-type-radio-group {
+  width: 100%;
+  max-width: 400px;
+}
+
+.card-type-radio-group .n-radio-button {
+  font-size: 14px;
 }
 </style>

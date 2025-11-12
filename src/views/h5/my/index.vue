@@ -1,131 +1,100 @@
 <template>
   <div class="h5-profile-wrap">
-    <div class="center">
-      <div class="avatar">
+    <!-- 头部背景图片区域 -->
+    <div class="header-bg">
+      <!-- 右上角图标 -->
+      <div class="header-icons">
+        <n-icon
+          class="icon"
+          @click="handleMessageClick"
+        >
+          <ChatbubbleEllipsesOutline />
+        </n-icon>
+        <n-icon
+          class="icon"
+          @click="handleSettingClick"
+        >
+          <SettingsOutline />
+        </n-icon>
+      </div>
+
+      <!-- 用户信息区域 -->
+      <div class="user-info">
         <n-avatar
           round
           size="large"
-          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          src="https://07akioni.oss-cn-beijing.aliyuncs.com/user_avatar.png"
+          class="user-avatar"
         />
         <div
           v-if="userStore.userInfo"
-          class="avatar-name"
+          class="user-details"
         >
-          <div>{{ userStore.userInfo.username }}</div>
-          <div style="color: #8e8b8b">
-            {{
-              translateWithVars('common.join.kaiyun.sports.day', {
-                days: getJoinDays,
-              })
-            }}
-          </div>
+          <div class="username">{{ userStore.userInfo.username }}</div>
+          <div class="join-info">{{ getJoinDaysText }}</div>
         </div>
         <div
           v-else
-          class="avatar-name"
+          class="login-area"
         >
-          <!-- sys.login: 登录文本, sys.register: 注册文本（中英文切换） -->
-          <n-button @click="router.push({ name: mobileRouterName.h5Login })"
-            >{{ sysTranslationsDict['sys.login'] }}/{{
+          <n-button
+            type="primary"
+            class="login-button"
+            @click="handleLoginClick"
+          >
+            {{ sysTranslationsDict['sys.login'] }}/{{
               sysTranslationsDict['sys.register']
             }}
           </n-button>
         </div>
-        <div>
-          <n-float-button
-            position="absolute"
-            :right="50"
-            :top="10"
-            @click="router.push({ name: mobileRouterName.h5Setting })"
-          >
-            <n-icon>
-              <SettingsOutline />
-            </n-icon>
-          </n-float-button>
-          <n-float-button
-            position="absolute"
-            :right="0"
-            :top="10"
-            @click="router.push({ name: mobileRouterName.h5Message })"
-          >
-            <n-icon>
-              <ChatbubbleEllipsesOutline />
-            </n-icon>
-          </n-float-button>
-        </div>
       </div>
+    </div>
 
-      <div class="user-center">
-        <div class="label">
-          {{ sysTranslationsDict['wallet.central'] }}
-          <n-icon color="#c9ccd9">
-            <Eye />
-          </n-icon>
-        </div>
-        <div
-          class="money"
-          v-if="userStore.userInfo"
+    <!-- 钱包区域 -->
+    <div class="wallet-section">
+      <div class="wallet-header">
+        <span class="wallet-title">{{
+          sysTranslationsDict['wallet.central']
+        }}</span>
+        <n-icon class="eye-icon">
+          <Eye />
+        </n-icon>
+      </div>
+      <div
+        v-if="userStore.userInfo"
+        class="wallet-balance"
+      >
+        {{ userStore.userInfo.wallet?.balance }}
+        <n-icon
+          class="refresh-icon"
+          @click="refresh"
         >
-          $ {{ userStore.userInfo.wallet?.balance }}
-          <n-icon @click="refresh">
-            <Refresh />
-          </n-icon>
-        </div>
-        <n-grid
-          :cols="4"
-          :x-gap="4"
-          y-gap="4"
-          style="text-align: center"
-        >
-          <n-grid-item>
-            <div @click="router.push({ name: routerName.h5TransactionRecord })">
-              <img
-                src="@/assets/img/tradeRecord.png"
-                width="40vw"
-              />
-            </div>
-            <div class="menu-title">
-              <!--              交易记录-->
-              {{ sysTranslationsDict['my.transaction.record'] }}
-            </div>
-          </n-grid-item>
-          <n-grid-item>
-            <div @click="router.push({ name: routerName.h5Votes })">
-              <img
-                src="@/assets/img/betPlacement.png"
-                width="40vw"
-              />
-            </div>
-            <div class="menu-title">
-              <!--              投注记录-->
-              {{ sysTranslationsDict['my.bet.record'] }}
-            </div>
-          </n-grid-item>
-          <n-grid-item>
-            <div>
-              <img
-                src="@/assets/img/returnWater.png"
-                width="40vw"
-              />
-            </div>
-            <div class="menu-title">
-              <!--              实时返水-->
-              {{ sysTranslationsDict['my.time.rebate'] }}
-            </div>
-          </n-grid-item>
-          <n-grid-item>
-            <div>
-              <img
-                src="@/assets/img/accountManagement.png"
-                width="40vw"
-              />
-            </div>
-            <div class="menu-title">
-              <!--              账户管理-->
-              {{ sysTranslationsDict['my.account.management'] }}
-            </div>
-          </n-grid-item>
-        </n-grid>
+          <Refresh />
+        </n-icon>
+      </div>
+    </div>
+    <div class="wallet-actions">
+      <div
+        class="action-item transaction"
+        @click="handleTransactionClick"
+      >
+        <span class="action-text">{{
+          sysTranslationsDict['my.transaction.record']
+        }}</span>
+        <n-icon class="arrow-icon">
+          <ChevronForwardOutline />
+        </n-icon>
+      </div>
+      <div
+        class="action-item bet"
+        @click="handleBetClick"
+      >
+        <span class="action-text">{{
+          sysTranslationsDict['my.bet.record']
+        }}</span>
+        <n-icon class="arrow-icon">
+          <ChevronForwardOutline />
+        </n-icon>
       </div>
     </div>
   </div>
@@ -137,39 +106,64 @@ import {
   Eye,
   Refresh,
   SettingsOutline,
+  ChevronForwardOutline,
 } from '@vicons/ionicons5';
 import { computed, onMounted } from 'vue';
 
-// eslint-disable-next-line import/order
 import router, { mobileRouterName, routerName } from '@/router';
 import { useCacheStore } from '@/store/cache';
 import { useUserStore } from '@/store/user';
 
 const userStore = useUserStore();
+const cacheStore = useCacheStore();
 
 const sysTranslationsDict = computed(() => {
-  return useCacheStore().sysTranslationsDict;
+  return cacheStore.sysTranslationsDict;
 });
 
-// 获取用户加入天数（这里暂时使用固定值，实际应该从userStore.userInfo中获取）
+// 计算加入天数
 const getJoinDays = computed(() => {
-  // 假设实际项目中，用户加入天数存储在userStore.userInfo.joinedDays中
-  // 如果没有，则返回默认值796
+  if (userStore.userInfo && userStore.userInfo.created_at) {
+    const createdAt = new Date(userStore.userInfo.created_at);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
   return 796;
 });
 
-// 处理带变量的国际化文本
-const translateWithVars = (key, variables = {}) => {
-  const template = sysTranslationsDict.value[key] || key;
-  let result = template;
+// 获取加入天数文本
+const getJoinDaysText = computed(() => {
+  const template =
+    sysTranslationsDict.value['common.join.kaiyun.sports.day'] ||
+    '加入开云体育第{days}天';
+  return template.replace('{days}', getJoinDays.value.toString());
+});
 
-  // 替换模板中的变量
-  Object.keys(variables).forEach((varName) => {
-    const regex = new RegExp(`\\{${varName}\\}`);
-    result = result.replace(regex, variables[varName]);
-  });
+// 事件处理函数
+const handleMessageClick = () => {
+  router.push({ name: mobileRouterName.h5Message });
+};
 
-  return result;
+const handleSettingClick = () => {
+  router.push({ name: mobileRouterName.h5Setting });
+};
+
+const handleLoginClick = () => {
+  router.push({ name: mobileRouterName.h5Login });
+};
+
+const handleTransactionClick = () => {
+  router.push({ name: routerName.h5TransactionRecord });
+};
+
+const handleBetClick = () => {
+  router.push({ name: routerName.h5Votes });
+};
+
+const refresh = () => {
+  userStore.getUserInfo();
 };
 
 onMounted(() => {
@@ -177,60 +171,181 @@ onMounted(() => {
     router.push({ name: mobileRouterName.h5Login });
   }
 });
-
-const refresh = () => {
-  userStore.getUserInfo();
-};
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .h5-profile-wrap {
-  background-color: #f2f1f6;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
-}
-
-.center {
-  padding: 4vh 5vw 0 5vw;
-}
-
-.avatar {
-  display: flex;
-  gap: 2vw;
-  padding: 10px 0;
-  font-size: 14px;
-  align-items: center;
+  background-color: #f2f1f6;
   position: relative;
-
-  .avatar-name {
-    /* 移除不必要的 margin 和 padding 计算 */
-    margin: 0;
-    padding: 0;
-  }
+  padding-bottom: 60px;
 }
 
-.user-center {
-  background: #fff;
-  height: 25vh;
-  border-radius: 10px;
-  margin-top: 2vh;
-  padding: 1vh 2vw;
+.header-bg {
+  background-image: url('@/assets/img/me_background.png');
+  background-position: center;
+  background-size: 100% 100%;
+  padding: 20px 15px 60px;
+  min-height: 20vh;
+  position: relative;
+}
+
+.header-icons {
+  position: absolute;
+  top: 15px;
+  right: 15px;
   display: flex;
-  flex-direction: column;
-  gap: 1vh;
-
-  .label {
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .money {
-    font-weight: bold;
-    font-size: 18px;
-  }
+  gap: 15px;
 }
 
-.menu-title {
-  margin-top: 1vh;
+.header-icons .icon {
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.user-avatar {
+  background-color: white;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 60px;
+  height: 60px;
+}
+
+.user-details {
+  color: white;
+}
+
+.username {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.join-info {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.login-button {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #7a57d1;
+  border: none;
+}
+
+.wallet-section {
+  position: relative;
+  top: -10vh;
+  margin: auto 20px 0;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 2;
+  background: url('@/assets/img/me_wallet.png');
+  background-size: 100% 100%;
+}
+
+.wallet-actions {
+  display: flex;
+  position: relative;
+  top: -8vh;
+  margin: 0 20px;
+  gap: 10px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.wallet-title {
+  font-size: 16px;
+  color: white;
+}
+
+.eye-icon {
+  color: #c9ccd9;
+  font-size: 16px;
+}
+
+.wallet-balance {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.refresh-icon {
+  color: #c9ccd9;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.action-item {
+  flex: 1;
+  padding: 0 15px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  height: 80px;
+}
+
+.action-item.transaction {
+  background: linear-gradient(to bottom right, #ffecd9, #ffd0bc);
+}
+
+.action-item.bet {
+  background: linear-gradient(to bottom right, #d5f3ff, #5cd8ff);
+}
+
+.action-text {
+  font-size: 16px;
+  font-weight: 600;
+  position: relative;
+  top: -10px;
+}
+
+.action-item.transaction .action-text {
+  color: #ff7043;
+}
+
+.action-item.bet .action-text {
+  color: #2196f3;
+}
+
+.arrow-icon {
+  font-size: 14px;
+  position: relative;
+  top: 20px;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.action-item.transaction .arrow-icon {
+  color: #ff7043;
+  background: #ffc397;
+}
+
+.action-item.bet .arrow-icon {
+  color: #2196f3;
+  background: #58ceef;
 }
 </style>

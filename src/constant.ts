@@ -23,7 +23,9 @@ export const appBuildInfo =
   // @ts-ignore
   process.env.BilldHtmlWebpackPlugin as BilldHtmlWebpackPluginLog;
 
-export const THEME_COLOR = '#2264e5';
+export const THEME_COLOR = '#4d20ae';
+
+export const THEME_BORDER_RADIUS = '10px';
 
 export const DEFAULT_RATIO = 16 / 9;
 

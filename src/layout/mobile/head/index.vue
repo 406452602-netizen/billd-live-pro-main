@@ -155,8 +155,6 @@ function handleSelectLocation(key) {
     box-sizing: border-box;
     padding: 0 15px;
     height: 100px;
-    border-bottom: 1px solid #e7e7e7;
-    background-color: white;
 
     .logo {
       width: 90px;

@@ -76,13 +76,17 @@
             <n-form-item path="captcha">
               <div style="display: flex; gap: 10px; align-items: center">
                 <!-- sys.captcha: 验证码文本（中英文切换） -->
-                <n-input
-                  v-model:value="captchaInput"
-                  :placeholder="sysTranslationsDict['sys.captcha'] || '验证码'"
-                  size="large"
-                  style="flex: 1"
-                  @keyup.enter="handleLoginSubmit"
-                />
+                <div style="flex: 1">
+                  <n-input
+                    v-model:value="captchaInput"
+                    :placeholder="
+                      sysTranslationsDict['sys.captcha'] || '验证码'
+                    "
+                    size="large"
+                    @keyup.enter="handleLoginSubmit"
+                  />
+                </div>
+
                 <div
                   v-if="!isCaptchaLoading && captchaInfo.svg"
                   style="
@@ -191,17 +195,21 @@
             </n-button>
           </div>
           <n-button
+            round
             type="info"
+            color="#4D21AE"
             :loading="isSubmitting"
             :disabled="isSubmitting"
             @click="handleLoginSubmit"
           >
             <!-- sys.login: 登录文本, sys.register: 注册文本（中英文切换） -->
-            {{
-              isLogin
-                ? sysTranslationsDict['sys.login']
-                : sysTranslationsDict['sys.register']
-            }}
+            <span style="color: white">
+              {{
+                isLogin
+                  ? sysTranslationsDict['sys.login']
+                  : sysTranslationsDict['sys.register']
+              }}
+            </span>
           </n-button>
 
           <div class="bottom-button">

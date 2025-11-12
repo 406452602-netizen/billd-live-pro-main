@@ -35,5 +35,6 @@ const appStore = useAppStore();
 
 .bottom {
   height: 10vh;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 </style>

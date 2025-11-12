@@ -1,162 +1,186 @@
 <template>
   <div class="withdraw-container">
     <!-- 原有头部代码保持不变 -->
-    <n-card :bordered="false">
-      <template #header>
-        <div class="card-header">
-          <n-button
-            :text="true"
-            @click="goBack"
-          >
-            <n-icon :component="ArrowBack" />
-          </n-button>
-          <!-- wallet.withdraw: 提现文本（中英文切换） -->
-          <div>{{ sysTranslationsDict['wallet.withdraw'] }}</div>
-          <!-- 显示钱包余额 -->
-          <!-- wallet.balance: 钱包余额文本（中英文切换） -->
-          <div>
-            {{ sysTranslationsDict['wallet.balance'] }}:
-            {{ userStore.userInfo?.wallet?.balance || 0 }} 元
+    <header class="card-header">
+      <n-button
+        :text="true"
+        class="back-button"
+        @click="goBack"
+      >
+        <n-icon :component="ArrowBack" />
+      </n-button>
+      <!-- wallet.withdraw: 提现文本（中英文切换） -->
+      <div>{{ sysTranslationsDict['wallet.withdraw'] }}</div>
+      <div></div>
+    </header>
+
+    <div class="content">
+      <!-- 钱包区域 -->
+      <div class="wallet-section">
+        <div class="wallet-header">
+          <div class="wallet-title">
+            {{ sysTranslationsDict['wallet.central'] || '当前余额' }}
           </div>
-          <!-- 添加按钮 -->
-          <!-- sys.wallet.add: 添加钱包文本（中英文切换） -->
+          <n-icon class="eye-icon">
+            <Eye />
+          </n-icon>
+        </div>
+        <div class="wallet-balance">
+          <div>{{ userStore.userInfo?.wallet?.balance || 0 }}</div>
           <n-button
-            type="primary"
+            class="add-button"
             size="small"
+            round
+            quaternary
             @click="goToAddAccount"
           >
-            {{ sysTranslationsDict['sys.wallet.add'] }}
+            {{ sysTranslationsDict['sys.wallet.add'] || '添加收款方式' }}
           </n-button>
         </div>
-      </template>
-    </n-card>
-    <!-- 顶部可切换的 Tab -->
-    <n-tabs
-      v-model:value="activeTab"
-      type="line"
-    >
-      <!-- wallet.card.withdrawal: 银行卡提现文本（中英文切换） -->
-      <n-tab-pane
-        name="1"
-        :tab="sysTranslationsDict['wallet.card.withdrawal']"
-      />
-      <!-- wallet.virtual.withdrawal: 虚拟账户提现文本（中英文切换） -->
-      <n-tab-pane
-        name="2"
-        :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
-      />
-    </n-tabs>
-    <n-card class="form-container">
-      <div class="form-group">
-        <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
-        <label class="label">
-          {{
-            activeTab === '1'
-              ? sysTranslationsDict['wallet.bank.card']
-              : sysTranslationsDict['wallet.virtual.account']
-          }}
-        </label>
-        <!-- 显示银行卡/虚拟账号列表 -->
-        <div
-          v-for="account in activeTab === '1' ? bankCards : virtualAccounts"
-          :key="account.id"
-          class="account-item"
-          :class="{ selected: selectedAccount === account.id }"
-          @click="selectAccount(account.id)"
-        >
-          <div class="account-name">
-            {{ account.bank.bank_name }}
-          </div>
-          <div class="account-number">{{ account.card_number }}</div>
-        </div>
-        <!-- sys.placeholder.chose: 选择提示文本（中英文切换） -->
-        <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
-        <div
-          v-if="showAccountError"
-          class="error-message"
-        >
-          {{ sysTranslationsDict['sys.placeholder.chose'] }}
-          {{
-            activeTab === '1'
-              ? sysTranslationsDict['wallet.bank.card']
-              : sysTranslationsDict['wallet.virtual.account']
-          }}
-        </div>
       </div>
-      <!-- 原有金额选择代码保持不变 -->
-      <div class="amount-buttons">
-        <!-- 取款金额选择按钮 -->
-        <n-radio-group
-          v-model:value="choseValue"
-          size="medium"
-        >
-          <n-radio-button
-            v-for="amount in presetAmounts"
-            :key="amount"
-            :value="amount"
-            @click="selectAmount(amount)"
-          >
-            {{ amount }}
-          </n-radio-button>
-          <!-- sys.custom: 自定义文本（中英文切换） -->
-          <n-radio-button
-            :value="-1"
-            @click="handleCustomAmountClick"
-          >
-            {{ sysTranslationsDict['sys.custom'] }}
-          </n-radio-button>
-        </n-radio-group>
-      </div>
-      <div
-        v-if="showCustomAmount"
-        class="form-group"
+      <!-- 顶部可切换的 Tab -->
+      <n-tabs
+        v-model:value="activeTab"
+        type="segment"
+        animated
+        :theme-overrides="tabsOverrides"
       >
-        <!-- 使用 NInputNumber 替换 input 组件 -->
-        <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
-        <n-input-number
-          id="amount"
-          v-model:value="amount"
-          :min="0"
-          :placeholder="sysTranslationsDict['sys.placeholder.input']"
+        <!-- wallet.card.withdrawal: 银行卡提现文本（中英文切换） -->
+        <n-tab-pane
+          name="1"
+          :tab="sysTranslationsDict['wallet.card.withdrawal']"
         />
-      </div>
-      <!-- wallet.confirm: 确认按钮文本（中英文切换） -->
-      <n-button
-        type="primary"
-        block
-        :disabled="selectedAccount == 0 || !amount"
-        @click="handleWithdraw"
-      >
-        {{ sysTranslationsDict['wallet.confirm'] }}
-      </n-button>
-    </n-card>
-    <!-- 原有提现记录代码保持不变 -->
-    <n-card class="history-container">
-      <template #header>
-        <!-- wallet.withdraw.record: 提现记录文本（中英文切换） -->
-        <div>{{ sysTranslationsDict['wallet.withdraw.record'] }}</div>
-      </template>
-      <!-- 使用 NDataTable 替换 table 组件 -->
-      <n-data-table
-        remote
-        :columns="columns"
-        :pagination="pagination"
-        :data="withdrawalRecords"
-        @update:page="fetchWithdrawalRecords"
-      />
-    </n-card>
+        <!-- wallet.virtual.withdrawal: 虚拟账户提现文本（中英文切换） -->
+        <n-tab-pane
+          name="2"
+          :tab="sysTranslationsDict['wallet.virtual.withdrawal']"
+        />
+      </n-tabs>
+      <n-card class="form-container">
+        <div class="form-group">
+          <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
+          <label class="label">
+            {{
+              activeTab === '1'
+                ? sysTranslationsDict['wallet.bank.card']
+                : sysTranslationsDict['wallet.virtual.account']
+            }}
+          </label>
+          <!-- 显示银行卡/虚拟账号列表 -->
+          <div
+            v-for="account in activeTab === '1' ? bankCards : virtualAccounts"
+            :key="account.id"
+            class="account-item"
+            :class="{ selected: selectedAccount === account.id }"
+            @click="selectAccount(account.id)"
+          >
+            <div class="account-number">{{ account.card_number }}</div>
+            <div class="account-name">
+              {{ account.bank.bank_name }}
+            </div>
+          </div>
+          <!-- sys.placeholder.chose: 选择提示文本（中英文切换） -->
+          <!-- wallet.bank.card: 银行卡文本, wallet.virtual.account: 虚拟账户文本（中英文切换） -->
+          <div
+            v-if="showAccountError"
+            class="error-message"
+          >
+            {{ sysTranslationsDict['sys.placeholder.chose'] }}
+            {{
+              activeTab === '1'
+                ? sysTranslationsDict['wallet.bank.card']
+                : sysTranslationsDict['wallet.virtual.account']
+            }}
+          </div>
+        </div>
+        <!-- 原有金额选择代码保持不变 -->
+        <div class="amount-buttons">
+          <!-- 取款金额选择按钮 -->
+          <n-radio-group
+            v-model:value="choseValue"
+            size="medium"
+          >
+            <n-radio
+              v-for="amount in presetAmounts"
+              :key="amount"
+              :value="amount"
+              @click="selectAmount(amount)"
+            >
+              {{ amount }}
+            </n-radio>
+            <!-- sys.custom: 自定义文本（中英文切换） -->
+            <n-radio
+              :value="-1"
+              @click="handleCustomAmountClick"
+            >
+              {{ sysTranslationsDict['sys.custom'] }}
+            </n-radio>
+          </n-radio-group>
+        </div>
+        <div
+          v-if="showCustomAmount"
+          class="form-group"
+        >
+          <!-- 使用 NInputNumber 替换 input 组件 -->
+          <!-- sys.placeholder.input: 输入提示文本（中英文切换） -->
+          <n-input-number
+            id="amount"
+            v-model:value="amount"
+            :min="0"
+            :placeholder="sysTranslationsDict['sys.placeholder.input']"
+          />
+        </div>
+        <!-- wallet.confirm: 确认按钮文本（中英文切换） -->
+        <n-button
+          type="primary"
+          block
+          round
+          :disabled="selectedAccount == 0 || !amount"
+          @click="handleWithdraw"
+        >
+          {{ sysTranslationsDict['wallet.confirm'] }}
+        </n-button>
+      </n-card>
+      <!-- 原有提现记录代码保持不变 -->
+      <n-card class="history-container">
+        <template #header>
+          <!-- wallet.withdraw.record: 提现记录文本（中英文切换） -->
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span> {{ sysTranslationsDict['wallet.withdraw.record'] }}</span>
+            <span style="color: #555555">{{
+              sysTranslationsDict['home.view.more']
+            }}</span>
+          </div>
+        </template>
+        <!-- 使用 NDataTable 替换 table 组件 -->
+        <n-data-table
+          remote
+          :columns="columns"
+          :pagination="pagination"
+          :data="withdrawalRecords"
+          :theme-overrides="tableOverrides"
+          @update:page="fetchWithdrawalRecords"
+        />
+      </n-card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowBack } from '@vicons/ionicons5';
-import { useMessage } from 'naive-ui';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ArrowBack, Eye } from '@vicons/ionicons5';
+import { TabsProps, useMessage } from 'naive-ui';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
-  getBankCards,
   createWithdrawalRecord,
+  getBankCards,
   getWithdrawalRecords,
 } from '@/api/wallet.ts';
 import { mobileRouterName } from '@/router';
@@ -184,6 +208,28 @@ const choseValue = ref(0);
 const showAccountError = ref(false);
 
 const showCustomAmount = ref(false);
+
+type TabsThemeOverrides = NonNullable<TabsProps['themeOverrides']>;
+const tabsOverrides: TabsThemeOverrides = {
+  tabTextColorActiveSegment: '#fff',
+  colorSegment: '#fff',
+  barColor: '#4d20ae',
+  tabTextColorHoverSegment: '#fff',
+  tabBorderColor: '#4d20ae',
+  tabTextColorSegment: '#4d20ae',
+  tabColorSegment: '#4d20ae',
+  tabColor: '#666666',
+  tabTextColorBar: '#4d20ae',
+};
+
+// 表格主题配置
+const tableOverrides = {
+  borderRadius: '12px',
+  borderColor: '#CCCCCC',
+  thBackgroundColor: 'transparent',
+  thBackgroundHoverColor: 'transparent',
+  thBackgroundSupplementaryColor: 'transparent',
+};
 
 function isLogin() {
   if (!userStore.userInfo?.id) {
@@ -344,6 +390,43 @@ watch(
 </script>
 
 <style scoped lang="scss">
+.wallet-section {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #722ed1 0%, #9945ff 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.wallet-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.wallet-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wallet-balance div {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.add-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .error-message {
   color: #f53f3f;
   font-size: 12px;
@@ -353,7 +436,6 @@ watch(
 }
 
 .withdraw-container {
-  padding: 20px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -375,7 +457,12 @@ watch(
 .card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  background: white;
+  height: 50px;
+  padding-top: env(safe-area-inset-top, 0);
+  position: relative;
+  text-align: center;
 }
 
 .amount-buttons {
@@ -391,6 +478,9 @@ watch(
   border: 1px solid #e6e8eb;
   border-radius: 8px;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   cursor: pointer;
   transition: background-color 0.3s;
 
@@ -399,8 +489,8 @@ watch(
   }
 
   &.selected {
-    background-color: #e6f7ff;
-    border-color: #91d5ff;
+    background-color: #f2e8ff;
+    border-color: #9945ff;
   }
 }
 
@@ -417,5 +507,31 @@ watch(
 
 .history-container {
   margin-bottom: 40px;
+}
+
+.back-button {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 10;
+}
+
+.back-button:active {
+  opacity: 0.7;
+}
+
+.content {
+  padding: 20px 20px;
+  background: #efeff1;
+  flex: 1;
 }
 </style>

@@ -1,95 +1,164 @@
 <template>
   <div class="bottom-menu">
     <div
-      v-for="item in menuItems"
-      :key="item.key"
-      class="menu-item"
-      :class="{ active: route.name === item.routeName }"
-      @click="changeRoute(item)"
+      v-for="menuItem in menuList"
+      :key="menuItem.key"
+      :class="[
+        'menu-item',
+        { active: currentRouteName === menuItem.routerName },
+      ]"
+      @click="handleMenuClick(menuItem)"
     >
-      <n-image
-        :src="item.label"
-        :preview-disabled="true"
-        width="24"
-        height="24"
-      ></n-image>
-      <!-- 动态国际化文本（中英文切换） -->
-      <span class="menu-key">{{ sysTranslationsDict[item.key] }}</span>
+      <n-icon
+        class="menu-icon"
+        :size="22"
+      >
+        <component :is="getIconComponent(menuItem.iconName)" />
+      </n-icon>
+      <div class="menu-key">{{ sysTranslationsDict[menuItem.title] }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-// import { Home, People } from '@vicons/ionicons5';
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import {
+  HomeOutline,
+  WalletOutline,
+  ChatboxEllipsesOutline,
+  TrendingDownOutline,
+  PersonOutline,
+} from '@vicons/ionicons5';
+import { NIcon } from 'naive-ui';
+import { ref, watch, computed } from 'vue';
+// 导入需要的图标
+import { useRoute, useRouter } from 'vue-router';
 
-import customerService from '@/assets/img/customerService.png';
-import depositMoney from '@/assets/img/depositMoney.png';
-import home from '@/assets/img/home.png';
-import mine from '@/assets/img/mine.png';
-import withdrawMoney from '@/assets/img/withdrawMoney.png';
-import router, { mobileRouterName } from '@/router';
+import { mobileRouterName } from '@/router';
 import { useCacheStore } from '@/store/cache';
 
 const route = useRoute();
+const router = useRouter();
+const currentRouteName = ref(route.name as string);
 const sysTranslationsDict = computed(() => {
   return useCacheStore().sysTranslationsDict;
 });
 
-const menuItems = [
-  { label: home, key: 'sys.home', routeName: mobileRouterName.h5 },
+// 监听路由变化，更新当前路由名称
+watch(
+  () => route.name,
+  (newName) => {
+    if (newName) {
+      currentRouteName.value = newName as string;
+    }
+  }
+);
+
+// 定义菜单项，使用naiveui内置的图标名称
+const menuList = [
   {
-    label: depositMoney,
-    key: 'sys.deposit.money',
-    routeName: mobileRouterName.h5DepositMoney,
+    key: 'home',
+    title: 'sys.home',
+    iconName: 'HomeOutline',
+    routerName: mobileRouterName.h5,
   },
   {
-    label: customerService,
-    key: 'sys.customer.service',
-    routeName: mobileRouterName.h5CustomerService,
+    key: 'deposit',
+    title: 'sys.deposit.money',
+    iconName: 'WalletOutline',
+    routerName: mobileRouterName.h5DepositMoney,
   },
   {
-    label: withdrawMoney,
-    key: 'sys.withdraw.money',
-    routeName: mobileRouterName.h5WithdrawMoney,
+    key: 'customer',
+    title: 'sys.customer.service',
+    iconName: 'ChatboxEllipsesOutline',
+    routerName: mobileRouterName.h5CustomerService,
   },
-  { label: mine, key: 'sys.mine', routeName: mobileRouterName.h5My },
+  {
+    key: 'withdraw',
+    title: 'sys.withdraw.money',
+    iconName: 'TrendingDownOutline',
+    routerName: mobileRouterName.h5WithdrawMoney,
+  },
+  {
+    key: 'user',
+    title: 'sys.mine',
+    iconName: 'PersonOutline',
+    routerName: mobileRouterName.h5My,
+  },
 ];
 
-function changeRoute(item: (typeof menuItems)[0]) {
-  router.push({ name: item.routeName });
+function handleMenuClick(menuItem: (typeof menuList)[0]) {
+  router.push({ name: menuItem.routerName });
+}
+
+// 根据图标名称返回对应的组件
+function getIconComponent(iconName: string) {
+  const iconMap: Record<string, any> = {
+    HomeOutline,
+    WalletOutline,
+    ChatboxEllipsesOutline,
+    TrendingDownOutline,
+    PersonOutline,
+  };
+  return iconMap[iconName] || HomeOutline;
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .bottom-menu {
+  background-color: #ffffff;
+  height: 60px;
   display: flex;
-  background-color: #fff;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 999;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
 
-  .menu-item {
-    flex: 1;
-    text-align: center;
-    padding: 15px 0;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.menu-item {
+  width: 20%;
+  text-align: center;
+  padding: 8px 0 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
 
-    &:hover {
-      background-color: #f0f0f0;
-    }
+.menu-icon {
+  margin-bottom: 2px;
+  color: #666666;
+}
 
-    &.active {
-      color: #ff6600; // 激活状态文字颜色，可根据需求修改
-    }
+.svg-icon {
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s;
+  /* 通过filter控制SVG图标颜色 */
+  filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(0%)
+    hue-rotate(325deg) brightness(96%) contrast(93%);
+}
 
-    .menu-key {
-      font-size: 12px;
-    }
-  }
+.menu-key {
+  font-size: 12px;
+  margin-top: 2px;
+  color: #666666;
+}
+
+.menu-item.active .menu-key {
+  color: #7a57d1;
+  font-weight: 500;
+}
+
+.menu-item.active .menu-icon {
+  color: #7a57d1;
+}
+
+.menu-item.active .svg-icon {
+  /* 选中状态显示紫色 */
+  filter: brightness(0) saturate(100%) invert(57%) sepia(24%) saturate(2188%)
+    hue-rotate(257deg) brightness(92%) contrast(94%);
 }
 </style>

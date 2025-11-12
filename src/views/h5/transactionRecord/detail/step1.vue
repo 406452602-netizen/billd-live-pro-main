@@ -10,7 +10,7 @@
       <n-radio-group
         v-model:value="formData.bank_type"
         size="medium"
-        :on-update:value="changeBankType"
+        @on-update:value="changeBankType"
       >
         <n-radio-button
           :key="bankTypeEnum.BANK"
@@ -121,25 +121,25 @@
         </n-radio>
       </n-radio-group>
     </div>
-    <div
-      v-if="showCustomAmount"
-      class="form-group"
-    >
-      <label for="amount">提现金额</label>
-      <!-- 使用 NInputNumber 替换 input 组件 -->
-      <n-input-number
-        id="amount"
-        v-model="formData.amount"
-        :min="0"
-        placeholder="请输入提现金额"
-      />
-    </div>
+    <!--    <div-->
+    <!--      v-if="showCustomAmount"-->
+    <!--      class="form-group"-->
+    <!--    >-->
+    <!--      <label for="amount">提现金额</label>-->
+    <!--      &lt;!&ndash; 使用 NInputNumber 替换 input 组件 &ndash;&gt;-->
+    <!--      <n-input-number-->
+    <!--        id="amount"-->
+    <!--        v-model="formData.amount"-->
+    <!--        :min="0"-->
+    <!--        placeholder="请输入提现金额"-->
+    <!--      />-->
+    <!--    </div>-->
     <n-button
       type="primary"
       class="submit-button"
       block
-      @click="submit"
       :disabled="isFormValid"
+      @click="submit"
       >立即存款
     </n-button>
   </n-card>
@@ -159,7 +159,7 @@ const showCustomAmount = ref(false);
 const choseValue = ref(0);
 const presetAmounts = [100, 150, 200, 500, 1000, 2000];
 const formData = ref<any>({
-  bank_type: null,
+  bank_type: bankTypeEnum.BANK,
   bank_id: null,
   amount: null,
   username: null,
